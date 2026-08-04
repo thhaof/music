@@ -1,9 +1,9 @@
 // --- PLAYLIST CONFIGURATION ---
 // Update this array with your own song details and relative paths
 const songs = [
-  { title: "Midnight City", artist: "Synthwave Beats", src: "music/song1.mp3" },
-  { title: "Cyber Sunset", artist: "Chillout Lounge", src: "music/song2.mp3" },
-  { title: "Neon Dreams", artist: "Retro Wave", src: "music/song3.mp3" }
+  { title: "Elegie", artist: "RPT MCK", src: "music/song1.mp3" },
+  { title: "IDK", artist: "RPT MCK", src: "music/song2.mp3" },
+  { title: "Wtf Bby I'm Lit", artist: "RPT MCK", src: "music/song3.mp3" }
 ];
 
 // --- DOM ELEMENTS ---
