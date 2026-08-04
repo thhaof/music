@@ -50,6 +50,106 @@ document.addEventListener("DOMContentLoaded", () => {
       title: "Night In Prague",
       artist: "RPT MCK",
       src: "./music/10. Night In Prague.mp3"
+    },
+    {
+      title: "Một Cái Ôm",
+      artist: "RPT MCK",
+      src: "./music/11. Một Cái Ôm.mp3"
+    },
+    {
+      title: "Liệm",
+      artist: "RPT MCK",
+      src: "./music/12. Liệm.mp3"
+    },
+    {
+      title: "Nếu Như Ta Chẳng Còn (feat. AAP Ướt Mi)",
+      artist: "RPT MCK",
+      src: "./music/13. Nếu Như Ta Chẳng Còn (feat. AAP Ướt Mi).mp3"
+    },
+    {
+      title: "Ai Mới Là Kẻ Xấu Xa",
+      artist: "RPT MCK",
+      src: "./music/14. Ai Mới Là Kẻ Xấu Xa.mp3"
+    },
+    {
+      title: "Slippery (feat. Tùng Dương)",
+      artist: "RPT MCK",
+      src: "./music/15. Slippery (feat. Tùng Dương).mp3"
+    },
+    {
+      title: "Intenpol",
+      artist: "RPT MCK",
+      src: "./music/16. Intenpol.mp3"
+    },
+    {
+      title: "Tây Thi",
+      artist: "RPT MCK",
+      src: "./music/17. Tây Thi.mp3"
+    },
+    {
+      title: "Hút và Hút",
+      artist: "RPT MCK",
+      src: "./music/18. Hút và Hút.mp3"
+    },
+    {
+      title: "Dưa Chua",
+      artist: "RPT MCK",
+      src: "./music/19. Dưa Chua.mp3"
+    },
+    {
+      title: "Xa Xôi (feat. Obito)",
+      artist: "RPT MCK",
+      src: "./music/20. Xa Xôi (feat. Obito).mp3"
+    },
+    {
+      title: "Che Phủ",
+      artist: "RPT MCK",
+      src: "./music/21. Che Phủ.mp3"
+    },
+    {
+      title: "Oanh M = Thuoc",
+      artist: "RPT MCK",
+      src: "./music/22. Oanh M = Thuoc.mp3"
+    },
+    {
+      title: "Ghet Xog Lai Thik",
+      artist: "RPT MCK",
+      src: "./music/23. Ghet Xog Lai Thik.mp3"
+    },
+    {
+      title: "Nhìn Kẻ Thù Của Tao",
+      artist: "RPT MCK",
+      src: "./music/24. Nhìn Kẻ Thù Của Tao.mp3"
+    },
+    {
+      title: "Envy (feat. THANHDRAW)",
+      artist: "RPT MCK",
+      src: "./music/25. Envy (feat. THANHDRAW).mp3"
+    },
+    {
+      title: "Cảm Ơn",
+      artist: "RPT MCK",
+      src: "./music/26. Cảm Ơn.mp3"
+    },
+    {
+      title: "Không Cần Lo Cho Tao",
+      artist: "RPT MCK",
+      src: "./music/27. Không Cần Lo Cho Tao.mp3"
+    },
+    {
+      title: "Huh (feat. RPT Orijinn & THANHDRAW)",
+      artist: "RPT MCK",
+      src: "./music/28. Huh (feat. RPT Orijinn & THANHDRAW).mp3"
+    },
+    {
+      title: "Nguyễn Văn Mười",
+      artist: "RPT MCK",
+      src: "./music/29. Nguyễn Văn Mười.mp3"
+    },
+    {
+      title: "Thịt Lợn",
+      artist: "RPT MCK",
+      src: "./music/30. Thịt Lợn.mp3"
     }
   ];
 
