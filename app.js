@@ -62,9 +62,9 @@ document.addEventListener("DOMContentLoaded", () => {
       src: "./music/12. Liệm.mp3"
     },
     {
-      title: "Nếu Như Ta Chẳng Còn (feat. AAP Ướt Mi)",
+      title: "Nếu Như Ta Chẳng Còn (feat. ASAP Ướt Mi)",
       artist: "RPT MCK",
-      src: "./music/13. Nếu Như Ta Chẳng Còn (feat. AAP Ướt Mi).mp3"
+      src: "./music/13. Nếu Như Ta Chẳng Còn (feat. ASAP Ướt Mi).mp3"
     },
     {
       title: "Ai Mới Là Kẻ Xấu Xa",
