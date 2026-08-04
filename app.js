@@ -39,12 +39,12 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       title: "Đao Của Anh Vừa",
       artist: "RPT MCK",
-      src: "./music/08. Đao Của Anh Vừa.mp3.mp3"
+      src: "./music/08. Đao Của Anh Vừa.mp3"
     },
     {
       title: "Là Gì Của Nhau",
       artist: "RPT MCK",
-      src: "./music/09. Là Gì Của Nhau.mp3.mp3"
+      src: "./music/09. Là Gì Của Nhau.mp3"
     },
     {
       title: "Night In Prague",
