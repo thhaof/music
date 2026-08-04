@@ -1,9 +1,9 @@
 // --- PLAYLIST CONFIGURATION ---
 // Update this array with your own song details and relative paths
 const songs = [
-  { title: "Elegie", artist: "RPT MCK", src: "music/song1.mp3" },
-  { title: "IDK", artist: "RPT MCK", src: "music/song2.mp3" },
-  { title: "Wtf Bby I'm Lit", artist: "RPT MCK", src: "music/song3.mp3" }
+  { title: "Elegie", artist: "RPT MCK", src: "01. Elegie.mp3" },
+  { title: "IDK", artist: "RPT MCK", src: "02. IDK.mp3" },
+  { title: "Wtf Bby I'm Lit", artist: "RPT MCK", src: "03. Wtf Bby I_m Lit.mp3" }
 ];
 
 // --- DOM ELEMENTS ---
