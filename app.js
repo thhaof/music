@@ -150,6 +150,151 @@ document.addEventListener("DOMContentLoaded", () => {
       title: "Thịt Lợn",
       artist: "RPT MCK",
       src: "./music/30. Thịt Lợn.mp3"
+    },
+    {
+      title: "xương rồng (intro)",
+      artist: "dangrangto, DONAL",
+      src: "./music/31. xương rồng (intro).mp3"
+    },
+    {
+      title: "my lil bitch (feat. TeuYungBoy)",
+      artist: "dangrangto, DONAL",
+      src: "./music/32. my lil bitch (feat. TeuYungBoy).mp3"
+    },
+    {
+      title: "cây màu đen (feat. MR LANH, LWKI)",
+      artist: "dangrangto, DONAL",
+      src: "./music/33. cây màu đen (feat. MR LANH, LWKI).mp3"
+    },
+    {
+      title: "buổi sáng Khương Đình (feat. BIG WIND)",
+      artist: "dangrangto, DONAL",
+      src: "./music/34. buổi sáng Khương Đình (feat. BIG WIND).mp3"
+    },
+    {
+      title: "vùng vẫy (feat. ZEXZEX)",
+      artist: "dangrangto, DONAL",
+      src: "./music/35. vùng vẫy (feat. ZEXZEX).mp3"
+    },
+    {
+      title: "baby anh đợi có lâu",
+      artist: "dangrangto, DONAL",
+      src: "./music/36. baby anh đợi có lâu.mp3"
+    },
+    {
+      title: "wrong times (interlude)",
+      artist: "dangrangto, DONAL",
+      src: "./music/37. wrong times (interlude).mp3"
+    },
+    {
+      title: "bolero buồn (feat. BIG WIND)",
+      artist: "dangrangto, DONAL",
+      src: "./music/38. bolero buồn (feat. BIG WIND).mp3"
+    },
+    {
+      title: "một ly (feat. Hoàng Tôn)",
+      artist: "dangrangto, DONAL",
+      src: "./music/39. một ly (feat. Hoàng Tôn).mp3"
+    },
+    {
+      title: "đánh rơi (feat. MICKEY)",
+      artist: "dangrangto, DONAL",
+      src: "./music/40. đánh rơi (feat. MICKEY).mp3"
+    },
+    {
+      title: "tốt cho anh",
+      artist: "dangrangto, DONAL",
+      src: "./music/41. tốt cho anh.mp3"
+    },
+    {
+      title: "quenvaonhau",
+      artist: "dangrangto, DONAL",
+      src: "./music/42. quenvaonhau.mp3"
+    },
+    {
+      title: "món quà",
+      artist: "dangrangto, DONAL",
+      src: "./music/43. món quà.mp3"
+    },
+    {
+      title: "đắm say trong tình yêu",
+      artist: "dangrangto, DONAL",
+      src: "./music/44. đắm say trong tình yêu.mp3"
+    },
+    {
+      title: "để dành cho em",
+      artist: "dangrangto, DONAL",
+      src: "./music/45. để dành cho em.mp3"
+    },
+    {
+      title: "thế giới của anh",
+      artist: "dangrangto, DONAL",
+      src: "./music/46. thế giới của anh.mp3"
+    },
+    {
+      title: "hãy đến đây bên anh trong một chiều mùa thu...",
+      artist: "dangrangto, DONAL",
+      src: "./music/47. hãy đến đây bên anh trong một chiều mùa thu....mp3"
+    },
+    {
+      title: "cà phê phin (feat. flames)",
+      artist: "Dfoxie37, Tuann",
+      src: "./music/48. cà phê phin (feat. flames).mp3"
+    },
+    {
+      title: "bụi sao",
+      artist: "Dfoxie37, Tuann",
+      src: "./music/49. bụi sao.mp3"
+    },
+    {
+      title: "tất cả là một (feat. Hale)",
+      artist: "Dfoxie37, Tuann",
+      src: "./music/50. tất cả là một (feat. Hale).mp3"
+    },
+    {
+      title: "họ",
+      artist: "Dfoxie37, Tuann",
+      src: "./music/51. họ.mp3"
+    },
+    {
+      title: "dậy đi",
+      artist: "Dfoxie37, Tuann",
+      src: "./music/52. dậy đi.mp3"
+    },
+    {
+      title: "tĩnh (feat. luyn, Blacka)",
+      artist: "Dfoxie37, Tuann",
+      src: "./music/53. tĩnh (feat. luyn, Blacka).mp3"
+    },
+    {
+      title: "xoay (feat. luyn, Rick)",
+      artist: "Dfoxie37, Tuann",
+      src: "./music/54. xoay (feat. luyn, Rick).mp3"
+    },
+    {
+      title: "chúa trời",
+      artist: "Dfoxie37, Tuann",
+      src: "./music/55. chúa trời.mp3"
+    },
+    {
+      title: "hello em có khỏe không (feat. Myhoa)",
+      artist: "Dfoxie37, Tuann",
+      src: "./music/56. hello em có khỏe không (feat. Myhoa).mp3"
+    },
+    {
+      title: "ngày (feat. Myhoa)",
+      artist: "Dfoxie37, Tuann",
+      src: "./music/57. ngày (feat. Myhoa).mp3"
+    },
+    {
+      title: "cuối tuần (feat. Tọi, Nuilillaw)",
+      artist: "Dfoxie37, Tuann",
+      src: "./music/58. cuối tuần (feat. Tọi, Nuilillaw).mp3"
+    },
+    {
+      title: "thế giới giả lập (feat. luyn)",
+      artist: "Dfoxie37, Tuann",
+      src: "./music/59. thế giới giả lập (feat. luyn).mp3"
     }
   ];
 
