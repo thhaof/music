@@ -7,14 +7,54 @@ const VALID_CREDENTIALS = {
 // Repository-hosted tracks inside the music/ folder
 const tracks = [
   {
-    title: "Song Title 1",
-    artist: "Artist Name",
-    src: "./music/song1.mp3"
+    title: "Elegie",
+    artist: "RPT MCK",
+    src: "./music/01. Elegie.mp3"
   },
   {
-    title: "Song Title 2",
-    artist: "Artist Name",
-    src: "./music/song2.mp3"
+    title: "IDK",
+    artist: "RPT MCK",
+    src: "./music/02. IDK.mp3"
+  }
+  {
+    title: "Wtf Bby I'm Lit",
+    artist: "RPT MCK",
+    src: "./music/03. Wtf Bby I_m Lit.mp3"
+  }
+  {
+    title: "Anh Không Muốn Nó Dễ Dàng",
+    artist: "RPT MCK",
+    src: "./music/04. Anh Không Muốn Nó Dễ Dàng.mp3"
+  }
+  {
+    title: "Baby (feat. marzuz)",
+    artist: "RPT MCK",
+    src: "./music/05. Baby (feat. marzuz).mp3"
+  }
+  {
+    title: "Yêu Anh Giết Anh",
+    artist: "RPT MCK",
+    src: "./music/06. Yêu Anh Giết Anh.mp3"
+  }
+  {
+    title: "Mắt Môi Tay Chân (feat. Tage)",
+    artist: "RPT MCK",
+    src: "./music/07. Mắt Môi Tay Chân (feat. Tage).mp3"
+  }
+  {
+    title: "Đao Của Anh Vừa",
+    artist: "RPT MCK",
+    src: "./music/08. Đao Của Anh Vừa.mp3.mp3"
+  }
+  {
+    title: "Là Gì Của Nhau",
+    artist: "RPT MCK",
+    src: "./music/09. Là Gì Của Nhau.mp3.mp3"
+  }
+  {
+    title: "Night In Prague",
+    artist: "RPT MCK",
+    src: "./music/10. Night In Prague.mp3"
   }
 ];
 
