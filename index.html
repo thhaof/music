@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spotify – Web Player</title>
-  <!-- Font Awesome Icons -->
+  <title>Music Player</title>
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -12,154 +11,132 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="spotify-container">
-    <!-- Left Sidebar -->
+  <div class="app-container">
+    <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="logo">
-        <i class="fa-brands fa-spotify"></i>
-        <span>Spotify</span>
+      <div class="user-badge">
+        <i class="fa-solid fa-user-astronaut"></i>
+        <span>WELCOME, USER</span>
       </div>
 
-      <nav class="nav-links">
-        <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i> Home</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-magnifying-glass"></i> Search</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-book"></i> Your Library</a>
+      <nav class="sidebar-section">
+        <a href="#" class="nav-link"><i class="fa-solid fa-satellite-dish"></i> Database</a>
       </nav>
 
-      <div class="sidebar-actions">
-        <button class="create-playlist-btn">
-          <i class="fa-solid fa-square-plus"></i> Create Playlist
-        </button>
-        <button class="liked-songs-btn">
-          <i class="fa-solid fa-heart"></i> Liked Songs
-        </button>
+      <div class="card-box session-box">
+        <div class="card-title"><i class="fa-solid fa-wave-square"></i> SESSION <span class="active-dot"></span></div>
+        <div class="session-stat">
+          <span>Tracks played</span>
+          <span id="session-played">0</span>
+        </div>
+        <div class="session-stat">
+          <span>Listening time</span>
+          <span id="session-time">0 min</span>
+        </div>
       </div>
 
-      <div class="sidebar-divider"></div>
+      <div class="card-box collections-box">
+        <div class="card-header">
+          <span>COLLECTIONS</span>
+          <i class="fa-solid fa-plus add-btn"></i>
+        </div>
 
-      <div class="library-list">
-        <div class="library-item active-playlist">My Library Playlist</div>
-        <div class="library-item">Vietnamese Rap Classics</div>
-        <div class="library-item">Chill Vibes</div>
+        <div class="sub-heading"><i class="fa-solid fa-star"></i> YOUR PLAYLISTS</div>
+        <div class="playlist-menu">
+          <div class="menu-item active"><i class="fa-solid fa-folder-closed"></i> All Tracks</div>
+        </div>
+
+        <div class="sub-heading"><i class="fa-solid fa-share-nodes"></i> SHARED PLAYLISTS</div>
+        <div class="shared-menu">
+          <div class="menu-item shared-item">
+            <span><i class="fa-solid fa-headphones"></i> test</span>
+            <span class="tag">ADMIN</span>
+          </div>
+          <div class="menu-item shared-item">
+            <span><i class="fa-solid fa-headphones"></i> Brian</span>
+            <span class="tag">BRIAN</span>
+          </div>
+          <div class="menu-item shared-item">
+            <span><i class="fa-solid fa-headphones"></i> Jpop</span>
+            <span class="tag">BRIAN</span>
+          </div>
+        </div>
       </div>
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="main-content">
-      <!-- Top Header Navigation -->
-      <header class="top-bar">
-        <div class="nav-buttons">
-          <button class="circle-btn"><i class="fa-solid fa-chevron-left"></i></button>
-          <button class="circle-btn"><i class="fa-solid fa-chevron-right"></i></button>
+      <header class="playlist-banner">
+        <div class="banner-info">
+          <span class="banner-subtitle">YOUR PLAYLIST</span>
+          <h1 class="banner-title">Main Collection</h1>
+          <p class="banner-meta"><span id="total-songs-count">0 songs</span> • <span id="total-artists-count">0 artists</span></p>
         </div>
-        <div class="user-profile">
-          <i class="fa-solid fa-circle-user"></i>
-          <span>User</span>
+        <div class="banner-controls">
+          <button class="pill-btn primary" id="hero-play-btn"><i class="fa-solid fa-play"></i> Play</button>
+          <button class="pill-btn secondary" id="hero-shuffle-btn"><i class="fa-solid fa-shuffle"></i> Shuffle</button>
+          <button class="pill-btn secondary"><i class="fa-solid fa-pen"></i> Add/Edit Songs</button>
+          <button class="pill-btn secondary"><i class="fa-solid fa-sort"></i> Sort Playlist</button>
         </div>
       </header>
 
-      <!-- Playlist Hero Header -->
-      <div class="playlist-header">
-        <div class="album-cover">
-          <i class="fa-solid fa-music"></i>
-        </div>
-        <div class="playlist-details">
-          <span class="playlist-type">PUBLIC PLAYLIST</span>
-          <h1 class="playlist-title">All Track Collection</h1>
-          <p class="playlist-meta">MCK, dangrangto, DONAL, Dfoxie37, Tuann • <span id="total-tracks-count">59 tracks</span></p>
-        </div>
-      </div>
-
-      <!-- Action Bar (Play All / Search inside Playlist) -->
-      <div class="action-bar">
-        <button class="spotify-play-btn" id="hero-play-btn">
-          <i class="fa-solid fa-play"></i>
-        </button>
-        <button class="icon-action-btn"><i class="fa-regular fa-heart"></i></button>
-        <button class="icon-action-btn"><i class="fa-solid fa-ellipsis"></i></button>
-      </div>
-
-      <!-- Songs Table View -->
-      <section class="tracks-section">
-        <table class="tracks-table">
+      <section class="table-container">
+        <table class="track-table">
           <thead>
             <tr>
-              <th class="col-num">#</th>
+              <th class="col-idx">#</th>
+              <th class="col-cover"></th>
               <th class="col-title">TITLE</th>
               <th class="col-artist">ARTIST</th>
-              <th class="col-action"><i class="fa-regular fa-clock"></i></th>
+              <th class="col-time">DURATION</th>
             </tr>
           </thead>
           <tbody id="playlist">
-            <!-- Dynamically populated by JS -->
+            <!-- Rendered by JS -->
           </tbody>
         </table>
       </section>
     </main>
 
-    <!-- Fixed Bottom Now Playing Bar -->
-    <footer class="now-playing-bar">
-      <!-- Track Details Left -->
-      <div class="track-details-left">
-        <div class="now-playing-art">
+    <!-- Bottom Player Bar -->
+    <footer class="player-bar">
+      <div class="track-info">
+        <div class="thumb-art" id="bottom-thumb">
           <i class="fa-solid fa-music"></i>
         </div>
-        <div class="track-text">
-          <div id="title" class="track-title-now">Select a track</div>
-          <div id="artist" class="track-artist-now">Artist</div>
+        <div class="track-meta">
+          <div id="title" class="track-name">Select a track</div>
+          <div id="artist" class="track-artist">Artist</div>
         </div>
-        <button class="like-btn-bottom" title="Save to Your Library">
-          <i class="fa-regular fa-heart"></i>
-        </button>
       </div>
 
-      <!-- Center Player Controls -->
-      <div class="player-controls-center">
-        <div class="control-buttons">
-          <button id="shuffle-btn" class="control-btn" title="Enable shuffle">
-            <i class="fa-solid fa-shuffle"></i>
-          </button>
-          <button id="prev-btn" class="control-btn" title="Previous">
-            <i class="fa-solid fa-backward-step"></i>
-          </button>
-          <button id="play-btn" class="play-pause-btn" title="Play">
-            <i id="play-icon" class="fa-solid fa-circle-play"></i>
-          </button>
-          <button id="next-btn" class="control-btn" title="Next">
-            <i class="fa-solid fa-forward-step"></i>
-          </button>
-          <button id="repeat-btn" class="control-btn" title="Enable repeat">
-            <i id="repeat-icon" class="fa-solid fa-repeat"></i>
-          </button>
+      <div class="controls-center">
+        <div class="playback-controls">
+          <button id="shuffle-btn" class="icon-btn"><i class="fa-solid fa-shuffle"></i></button>
+          <button id="prev-btn" class="icon-btn"><i class="fa-solid fa-backward-step"></i></button>
+          <button id="play-btn" class="play-circle-btn"><i id="play-icon" class="fa-solid fa-play"></i></button>
+          <button id="next-btn" class="icon-btn"><i class="fa-solid fa-forward-step"></i></button>
+          <button id="repeat-btn" class="icon-btn"><i id="repeat-icon" class="fa-solid fa-rotate-right"></i></button>
         </div>
 
-        <div class="playback-bar">
-          <span id="current-time" class="time-stamp">0:00</span>
-          <div id="progress-container" class="progress-bar-wrapper">
-            <div id="progress-bar" class="progress-fill"></div>
+        <div class="progress-container">
+          <span id="current-time" class="time-str">0:00</span>
+          <div id="progress-bar-container" class="bar-wrapper">
+            <div id="progress-bar" class="bar-fill"></div>
           </div>
-          <span id="duration" class="time-stamp">0:00</span>
+          <span id="duration" class="time-str">0:00</span>
         </div>
       </div>
 
-      <!-- Right Side Sound Controls -->
-      <div class="player-controls-right">
-        <i id="volume-icon" class="fa-solid fa-volume-high spotify-icon-btn"></i>
-        <input
-          type="range"
-          id="volume-slider"
-          class="volume-range"
-          min="0"
-          max="1"
-          step="0.01"
-          value="1"
-        />
+      <div class="volume-right">
+        <i id="volume-icon" class="fa-solid fa-volume-high"></i>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1" />
+        <span id="volume-val" class="volume-num">100%</span>
       </div>
     </footer>
   </div>
 
   <audio id="audio-player"></audio>
-
   <script src="app.js"></script>
 </body>
 </html>
