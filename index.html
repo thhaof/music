@@ -55,12 +55,12 @@
   <div id="addToPlaylistModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden">
     <div class="bg-[#1e1e1e] p-6 rounded-xl w-96 border border-gray-800 shadow-2xl">
       <h3 class="text-lg font-bold mb-2">Add to Playlist</h3>
-      <p id="targetSongTitle" class="text-xs text-gray-400 mb-4 truncate"></p>
+      <p id="targetSongTitle" class="text-xs text-blue-400 font-medium mb-4 truncate"></p>
       <div id="playlistSelectList" class="max-h-60 overflow-y-auto flex flex-col gap-2 mb-4">
-        <!-- Playlists list will be loaded here -->
+        <!-- Playlists list loaded dynamically -->
       </div>
       <div class="flex justify-end gap-3">
-        <button onclick="closeModal('addToPlaylistModal')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg">Cancel</button>
+        <button onclick="closeModal('addToPlaylistModal')" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-xs rounded-lg font-semibold">Done</button>
       </div>
     </div>
   </div>
@@ -82,12 +82,6 @@
           <a href="#" onclick="switchView('discover')" id="nav-discover" class="nav-item active-nav flex items-center gap-4 px-4 py-3 text-sm text-gray-300 hover:text-white rounded-lg transition">
             <i class="fa-solid fa-compass text-lg"></i> Discover
           </a>
-          <a href="#" onclick="switchView('for-you')" id="nav-for-you" class="nav-item flex items-center gap-4 px-4 py-3 text-sm text-gray-300 hover:text-white rounded-lg transition">
-            <i class="fa-solid fa-sparkles text-lg"></i> For You
-          </a>
-          <a href="#" onclick="switchView('my-music')" id="nav-my-music" class="nav-item flex items-center gap-4 px-4 py-3 text-sm text-gray-300 hover:text-white rounded-lg transition">
-            <i class="fa-solid fa-user-gear text-lg"></i> My Music
-          </a>
         </nav>
 
         <hr class="border-gray-800 my-4 mx-4">
@@ -100,8 +94,8 @@
           </button>
         </div>
 
-        <div id="sidebarPlaylists" class="px-3 flex flex-col gap-1 max-h-48 overflow-y-auto">
-          <!-- Dynamic Playlists Added Here -->
+        <div id="sidebarPlaylists" class="px-3 flex flex-col gap-1 max-h-56 overflow-y-auto">
+          <!-- Dynamic Playlists -->
         </div>
       </div>
 
@@ -147,25 +141,30 @@
           </div>
         </div>
 
-        <!-- PLAYLIST DETAIL VIEW (Hidden by default) -->
+        <!-- PLAYLIST DETAIL VIEW -->
         <div id="playlistDetailView" class="hidden">
           <div class="flex items-end gap-6 mb-8">
             <div class="w-40 h-40 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl">
               <i class="fa-solid fa-music text-5xl text-white/70"></i>
             </div>
-            <div>
+            <div class="flex-1">
               <p class="text-xs uppercase font-semibold text-blue-400">Playlist</p>
               <h1 id="playlistDetailTitle" class="text-4xl font-bold mt-1 mb-3">My Playlist</h1>
               <p id="playlistDetailCount" class="text-xs text-gray-400 mb-4">0 Songs</p>
-              <button id="playAllBtn" class="bg-blue-600 hover:bg-blue-500 px-6 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2 shadow-lg">
-                <i class="fa-solid fa-play"></i> Play All
-              </button>
+              <div class="flex items-center gap-3">
+                <button id="playAllBtn" class="bg-blue-600 hover:bg-blue-500 px-6 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2 shadow-lg">
+                  <i class="fa-solid fa-play"></i> Play All
+                </button>
+                <button id="deletePlaylistBtn" class="bg-red-600/20 text-red-400 hover:bg-red-600/40 px-4 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2 transition">
+                  <i class="fa-solid fa-trash"></i> Delete
+                </button>
+              </div>
             </div>
           </div>
 
           <div class="bg-[#181818]/60 rounded-xl p-4">
             <div id="playlistSongsList" class="flex flex-col gap-2">
-              <!-- Playlist Songs loaded here -->
+              <!-- Playlist Songs -->
             </div>
           </div>
         </div>
@@ -192,13 +191,11 @@
     <!-- Controls -->
     <div class="flex flex-col items-center gap-2 w-1/2 max-w-xl">
       <div class="flex items-center gap-6">
-        <button id="shuffleBtn" onclick="toggleShuffle()" class="text-gray-400 hover:text-white text-xs"><i class="fa-solid fa-shuffle"></i></button>
         <button onclick="prevSong()" class="text-gray-300 hover:text-white text-sm"><i class="fa-solid fa-backward-step"></i></button>
         <button onclick="togglePlay()" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition">
           <i id="playIcon" class="fa-solid fa-play text-sm ml-0.5"></i>
         </button>
         <button onclick="nextSong()" class="text-gray-300 hover:text-white text-sm"><i class="fa-solid fa-forward-step"></i></button>
-        <button id="repeatBtn" onclick="toggleRepeat()" class="text-gray-400 hover:text-white text-xs"><i class="fa-solid fa-repeat"></i></button>
       </div>
       
       <!-- Progress Bar -->
@@ -221,51 +218,64 @@
 
   <!-- JAVASCRIPT LOGIC -->
   <script>
-    // SONGS DATABASE (Cloudflare URL examples)
+    // DATABASE SONGS
     const songs = [
-            {
-                id: "1",
-                title: "Elegie",
-                artist: "MCK",
-                cover: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/cover.jpg",
-                url: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/01.%20Elegie.mp3",
-            },
-           {
-                id: "2",
-                title: "IDK",
-                artist: "MCK",
-                cover: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/cover.jpg",
-                url: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/02.%20IDK.mp3",
-            },
-            {
-                id: "3",
-                title: "Wtf Bby I'm Lit",
-                artist: "MCK",
-                cover: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/cover.jpg",
-                url: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/03.%20Wtf%20Bby%20I_m%20Lit.mp3",
-            },
+      {
+        id: 1,
+        title: "Elegie",
+        artist: "MCK",
+        cover: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/cover.jpg",
+        src: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/01.%20Elegie.mp3"
+      },
+      {
+        id: 2,
+        title: "IDK",
+        artist: "MCK",
+        cover: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/cover.jpg",
+        src: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/01.%20Elegie.mp3"
+      },
+      {
+        id: 3,
+        title: "Wtf Bby I'm Lit",
+        artist: "MCK",
+        cover: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/cover.jpg",
+        src: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/03.%20Wtf%20Bby%20I_m%20Lit.mp3"
+      }
     ];
 
-    // PLAYLISTS STATE
-    let playlists = [
-      { id: 'p1', name: 'My Favorites', songIds: [1, 2] }
-    ];
+    // PLAYLISTS LOCALSTORAGE MANAGEMENT
+    let playlists = [];
+
+    function loadSavedPlaylists() {
+      const saved = localStorage.getItem('thhaof_playlists');
+      if (saved) {
+        playlists = JSON.parse(saved);
+      } else {
+        playlists = [{ id: 'p1', name: 'My Favorites', songIds: [1, 2] }];
+        savePlaylists();
+      }
+    }
+
+    function savePlaylists() {
+      localStorage.setItem('thhaof_playlists', JSON.stringify(playlists));
+    }
 
     let currentQueue = [...songs];
     let currentSongIndex = 0;
     let isPlaying = false;
-    let selectedSongForPlaylist = null;
+    let currentActivePlaylistId = null;
 
     const audio = document.getElementById('audioPlayer');
 
     // INITIALIZATION
     window.onload = () => {
+      loadSavedPlaylists();
       renderSongs(songs);
       renderSidebarPlaylists();
       loadSong(0);
     };
 
-    // AUTHENTICATION
+    // AUTH
     function handleLogin(e) {
       e.preventDefault();
       const u = document.getElementById('usernameInput').value;
@@ -284,11 +294,11 @@
       document.getElementById('authModal').classList.remove('hidden');
     }
 
-    // MODAL CONTROL
+    // MODAL HELPERS
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-    // RENDER SONGS
+    // RENDER DISCOVER SONGS
     function renderSongs(list) {
       const container = document.getElementById('songList');
       container.innerHTML = '';
@@ -315,7 +325,7 @@
       });
     }
 
-    // PLAYLIST MANAGEMENT
+    // PLAYLIST LOGIC
     function saveNewPlaylist() {
       const name = document.getElementById('playlistNameInput').value.trim();
       if (!name) return;
@@ -327,6 +337,7 @@
       };
       
       playlists.push(newPlaylist);
+      savePlaylists();
       document.getElementById('playlistNameInput').value = '';
       closeModal('createPlaylistModal');
       renderSidebarPlaylists();
@@ -338,30 +349,40 @@
       playlists.forEach(pl => {
         container.innerHTML += `
           <button onclick="openPlaylistView('${pl.id}')" class="w-full text-left px-4 py-2 text-xs text-gray-400 hover:text-white rounded-lg hover:bg-white/5 truncate flex items-center justify-between group">
-            <span><i class="fa-solid fa-list-ul mr-2 text-blue-500"></i> ${pl.name}</span>
-            <span class="text-[10px] text-gray-500">${pl.songIds.length}</span>
+            <span class="truncate"><i class="fa-solid fa-list-ul mr-2 text-blue-500"></i> ${pl.name}</span>
+            <span class="text-[10px] bg-gray-800 px-2 py-0.5 rounded-full text-gray-400">${pl.songIds.length}</span>
           </button>
         `;
       });
     }
 
     function openAddToPlaylistModal(songId) {
-      selectedSongForPlaylist = songs.find(s => s.id === songId);
-      document.getElementById('targetSongTitle').innerText = selectedSongForPlaylist.title;
-      
+      const targetSong = songs.find(s => s.id === songId);
+      if (!targetSong) return;
+
+      document.getElementById('targetSongTitle').innerText = targetSong.title;
+      renderPlaylistSelectList(songId);
+      openModal('addToPlaylistModal');
+    }
+
+    function renderPlaylistSelectList(songId) {
       const listContainer = document.getElementById('playlistSelectList');
       listContainer.innerHTML = '';
       
+      if (playlists.length === 0) {
+        listContainer.innerHTML = `<p class="text-xs text-gray-500 text-center py-2">No playlists created yet.</p>`;
+        return;
+      }
+
       playlists.forEach(pl => {
         const isAdded = pl.songIds.includes(songId);
         listContainer.innerHTML += `
-          <button onclick="toggleSongInPlaylist('${pl.id}', ${songId})" class="flex items-center justify-between p-3 rounded-lg bg-[#2a2a2a] hover:bg-[#333] text-xs transition">
-            <span>${pl.name}</span>
-            <i class="fa-solid ${isAdded ? 'fa-check text-green-400' : 'fa-plus text-gray-400'}"></i>
+          <button onclick="toggleSongInPlaylist('${pl.id}', ${songId})" class="w-full flex items-center justify-between p-3 rounded-lg bg-[#2a2a2a] hover:bg-[#333] text-xs transition">
+            <span class="font-medium text-white">${pl.name}</span>
+            <i class="fa-solid ${isAdded ? 'fa-check text-green-400 font-bold' : 'fa-plus text-gray-400'}"></i>
           </button>
         `;
       });
-      openModal('addToPlaylistModal');
     }
 
     function openAddToPlaylistCurrent() {
@@ -378,13 +399,18 @@
         } else {
           pl.songIds.push(songId);
         }
-        openAddToPlaylistModal(songId);
+        savePlaylists();
+        renderPlaylistSelectList(songId);
         renderSidebarPlaylists();
+
+        if (currentActivePlaylistId === playlistId) {
+          openPlaylistView(playlistId);
+        }
       }
     }
 
-    // PLAYLIST VIEW & PLAYBACK
     function openPlaylistView(playlistId) {
+      currentActivePlaylistId = playlistId;
       const pl = playlists.find(p => p.id === playlistId);
       if (!pl) return;
 
@@ -399,7 +425,7 @@
       songsListContainer.innerHTML = '';
 
       if (plSongs.length === 0) {
-        songsListContainer.innerHTML = `<p class="text-xs text-gray-500 py-4 text-center">No songs in this playlist yet.</p>`;
+        songsListContainer.innerHTML = `<p class="text-xs text-gray-500 py-6 text-center">No songs in this playlist yet. Go to Discover to add songs!</p>`;
       } else {
         plSongs.forEach((song, index) => {
           songsListContainer.innerHTML += `
@@ -412,15 +438,30 @@
                   <p class="text-[10px] text-gray-400">${song.artist}</p>
                 </div>
               </div>
-              <button onclick="playPlaylistSong('${playlistId}', ${song.id})" class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                <i class="fa-solid fa-play text-[10px] text-white"></i>
-              </button>
+              <div class="flex items-center gap-2">
+                <button onclick="toggleSongInPlaylist('${playlistId}', ${song.id})" title="Remove from playlist" class="text-gray-500 hover:text-red-400 text-xs px-2">
+                  <i class="fa-solid fa-minus"></i>
+                </button>
+                <button onclick="playPlaylistSong('${playlistId}', ${song.id})" class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                  <i class="fa-solid fa-play text-[10px] text-white"></i>
+                </button>
+              </div>
             </div>
           `;
         });
       }
 
       document.getElementById('playAllBtn').onclick = () => playPlaylist(playlistId);
+      document.getElementById('deletePlaylistBtn').onclick = () => deletePlaylist(playlistId);
+    }
+
+    function deletePlaylist(playlistId) {
+      if (confirm("Are you sure you want to delete this playlist?")) {
+        playlists = playlists.filter(p => p.id !== playlistId);
+        savePlaylists();
+        renderSidebarPlaylists();
+        switchView('discover');
+      }
     }
 
     function playPlaylist(playlistId) {
@@ -441,7 +482,7 @@
       playAudio();
     }
 
-    // PLAYER CORE LOGIC
+    // PLAYER AUDIO ENGINE
     function loadSong(index) {
       if (!currentQueue[index]) return;
       const song = currentQueue[index];
@@ -487,7 +528,6 @@
       playAudio();
     }
 
-    // AUDIO TIME & VOLUME UPDATES
     audio.ontimeupdate = () => {
       if (audio.duration) {
         const progress = (audio.currentTime / audio.duration) * 100;
@@ -516,9 +556,16 @@
 
     function switchView(view) {
       if (view === 'discover') {
+        currentActivePlaylistId = null;
         document.getElementById('playlistDetailView').classList.add('hidden');
         document.getElementById('discoverView').classList.remove('hidden');
       }
+    }
+
+    function filterSongs() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = songs.filter(s => s.title.toLowerCase().includes(query) || s.artist.toLowerCase().includes(query));
+      renderSongs(filtered);
     }
   </script>
 </body>
