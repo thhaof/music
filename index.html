@@ -464,25 +464,6 @@
       loadSong(0);
     };
 
-    // AUTH
-    function handleLogin(e) {
-      e.preventDefault();
-      const u = document.getElementById('usernameInput').value;
-      const p = document.getElementById('passwordInput').value;
-      
-      if(u === 'thhaof' && p === '300172') {
-        document.getElementById('authModal').classList.add('hidden');
-        document.getElementById('userNameDisplay').innerText = u;
-        document.getElementById('userStatus').innerText = 'Member';
-      } else {
-        document.getElementById('loginError').classList.remove('hidden');
-      }
-    }
-
-    function logout() {
-      document.getElementById('authModal').classList.remove('hidden');
-    }
-
     // MODAL HELPERS
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
