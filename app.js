@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { title: "Nguyễn Văn Mười", artist: "MCK", src: "./music/29. Nguyễn Văn Mười.mp3" },
     { title: "Thịt Lợn", artist: "MCK", src: "./music/30. Thịt Lợn.mp3" },
     { title: "xương rồng (intro)", artist: "dangrangto, DONAL", src: "./music/31. xương rồng (intro).mp3" },
-    { title: "my lil bitch (feat. TeuYungBoy)", artist: "dangrangto, DONAL", src: "./music/32. my lil Bitch (feat. TeuYungBoy).mp3" },
+    { title: "my lil bitch (feat. TeuYungBoy)", artist: "dangrangto, DONAL", src: "./music/32. my lil bitch (feat. TeuYungBoy).mp3" },
     { title: "cây màu đen (feat. MR LANH, LWKI)", artist: "dangrangto, DONAL", src: "./music/33. cây màu đen (feat. MR LANH, LWKI).mp3" },
     { title: "buổi sáng Khương Đình (feat. BIG WIND)", artist: "dangrangto, DONAL", src: "./music/34. buổi sáng Khương Đình (feat. BIG WIND).mp3" },
     { title: "vùng vẫy (feat. ZEXZEX)", artist: "dangrangto, DONAL", src: "./music/35. vùng vẫy (feat. ZEXZEX).mp3" },
