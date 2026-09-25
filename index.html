@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>thhaof - Nghe nhạc chất lượng cao</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="navbar">
+        <div class="logo">
+            <span class="brand">thhaof</span>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Tìm bài hát, nghệ sĩ...">
+            <button><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Sidebar Playlist -->
+        <section class="playlist-section">
+            <h2>Bài Hát Nổi Bật</h2>
+            <ul id="playlist">
+                <!-- Danh sách bài hát sẽ tự động tải vào đây -->
+            </ul>
+        </section>
+
+        <!-- Player Center -->
+        <section class="player-section">
+            <div class="cd-thumb">
+                <img id="cover" src="https://via.placeholder.com/200" alt="Cover">
+            </div>
+            <div class="song-info">
+                <h3 id="title">Tên Bài Hát</h3>
+                <p id="artist">Ca Sĩ</p>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button id="prev"><i class="fa-solid fa-backward-step"></i></button>
+                <button id="play" class="btn-play"><i class="fa-solid fa-play"></i></button>
+                <button id="next"><i class="fa-solid fa-forward-step"></i></button>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <span id="current-time">0:00</span>
+                <input type="range" id="progress" value="0" min="0" max="100">
+                <span id="duration">0:00</span>
+            </div>
+
+            <audio id="audio"></audio>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
