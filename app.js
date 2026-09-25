@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { title: "Nguyễn Văn Mười", artist: "MCK", src: "./music/29. Nguyễn Văn Mười.mp3" },
     { title: "Thịt Lợn", artist: "MCK", src: "./music/30. Thịt Lợn.mp3" },
     { title: "xương rồng (intro)", artist: "dangrangto, DONAL", src: "./music/31. xương rồng (intro).mp3" },
-    { title: "my lil bitch (feat. TeuYungBoy)", artist: "dangrangto, DONAL", src: "./music/32. my lil bitch (feat. TeuYungBoy).mp3" },
+    { title: "my lil bitch (feat. TeuYungBoy)", artist: "dangrangto, DONAL", src: "./music/32. my lil Bitch (feat. TeuYungBoy).mp3" },
     { title: "cây màu đen (feat. MR LANH, LWKI)", artist: "dangrangto, DONAL", src: "./music/33. cây màu đen (feat. MR LANH, LWKI).mp3" },
     { title: "buổi sáng Khương Đình (feat. BIG WIND)", artist: "dangrangto, DONAL", src: "./music/34. buổi sáng Khương Đình (feat. BIG WIND).mp3" },
     { title: "vùng vẫy (feat. ZEXZEX)", artist: "dangrangto, DONAL", src: "./music/35. vùng vẫy (feat. ZEXZEX).mp3" },
@@ -64,91 +64,81 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentTrackIndex = 0;
   let isPlaying = false;
   let isShuffle = false;
-  let repeatMode = 'off';
-  let previousVolume = 1;
+  let isRepeat = false;
+  let tracksPlayedCount = 0;
+  let totalListeningSeconds = 0;
 
-  // DOM Elements
   const audio = document.getElementById("audio-player");
   const title = document.getElementById("title");
   const artist = document.getElementById("artist");
-
   const playBtn = document.getElementById("play-btn");
   const playIcon = document.getElementById("play-icon");
   const heroPlayBtn = document.getElementById("hero-play-btn");
+  const heroShuffleBtn = document.getElementById("hero-shuffle-btn");
   const prevBtn = document.getElementById("prev-btn");
   const nextBtn = document.getElementById("next-btn");
   const shuffleBtn = document.getElementById("shuffle-btn");
   const repeatBtn = document.getElementById("repeat-btn");
-  const repeatIcon = document.getElementById("repeat-icon");
-
   const progressBar = document.getElementById("progress-bar");
-  const progressContainer = document.getElementById("progress-container");
+  const progressContainer = document.getElementById("progress-bar-container");
   const currentTimeEl = document.getElementById("current-time");
   const durationEl = document.getElementById("duration");
-  
-  const volumeIcon = document.getElementById("volume-icon");
   const volumeSlider = document.getElementById("volume-slider");
+  const volumeVal = document.getElementById("volume-val");
   const playlistEl = document.getElementById("playlist");
-  const totalTracksCount = document.getElementById("total-tracks-count");
 
-  function formatTime(seconds) {
-    if (isNaN(seconds) || seconds === 0) return "0:00";
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  const sessionPlayedEl = document.getElementById("session-played");
+  const sessionTimeEl = document.getElementById("session-time");
+
+  // Track session timer
+  setInterval(() => {
+    if (isPlaying) {
+      totalListeningSeconds++;
+      if (sessionTimeEl) {
+        sessionTimeEl.textContent = `${Math.floor(totalListeningSeconds / 60)} min`;
+      }
+    }
+  }, 1000);
+
+  function formatTime(secs) {
+    if (isNaN(secs) || secs === 0) return "0:00";
+    const m = Math.floor(secs / 60);
+    const s = Math.floor(secs % 60);
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
   }
 
   function loadTrack(index) {
-    if (tracks.length === 0) return;
     currentTrackIndex = index;
     const track = tracks[currentTrackIndex];
     if (title) title.textContent = track.title;
     if (artist) artist.textContent = track.artist;
     if (audio) audio.src = track.src;
-
-    updatePlaylistHighlight();
+    highlightRow();
   }
 
   function playTrack() {
-    if (tracks.length === 0 || !audio) return;
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          isPlaying = true;
-          if (playIcon) playIcon.className = "fa-solid fa-circle-pause";
-          if (heroPlayBtn) heroPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-        })
-        .catch((err) => {
-          console.warn("Playback error:", err);
-          isPlaying = false;
-          if (playIcon) playIcon.className = "fa-solid fa-circle-play";
-          if (heroPlayBtn) heroPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-        });
-    }
+    audio.play().then(() => {
+      isPlaying = true;
+      playIcon.className = "fa-solid fa-pause";
+      heroPlayBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+    }).catch(err => console.warn(err));
   }
 
   function pauseTrack() {
+    audio.pause();
     isPlaying = false;
-    if (audio) audio.pause();
-    if (playIcon) playIcon.className = "fa-solid fa-circle-play";
-    if (heroPlayBtn) heroPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+    playIcon.className = "fa-solid fa-play";
+    heroPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play';
   }
 
   function togglePlay() {
-    if (tracks.length === 0) return;
     isPlaying ? pauseTrack() : playTrack();
   }
 
-  function prevTrack() {
-    if (tracks.length === 0) return;
-    currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
-    loadTrack(currentTrackIndex);
-    playTrack();
-  }
-
   function nextTrack() {
-    if (tracks.length === 0) return;
+    tracksPlayedCount++;
+    if (sessionPlayedEl) sessionPlayedEl.textContent = tracksPlayedCount;
+
     if (isShuffle) {
       currentTrackIndex = Math.floor(Math.random() * tracks.length);
     } else {
@@ -158,118 +148,33 @@ document.addEventListener("DOMContentLoaded", () => {
     playTrack();
   }
 
-  function handleTrackEnded() {
-    if (repeatMode === 'one') {
-      loadTrack(currentTrackIndex);
-      playTrack();
-    } else if (repeatMode === 'all') {
-      nextTrack();
-    } else {
-      if (currentTrackIndex < tracks.length - 1 || isShuffle) {
-        nextTrack();
-      } else {
-        pauseTrack();
-      }
-    }
+  function prevTrack() {
+    currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+    loadTrack(currentTrackIndex);
+    playTrack();
   }
 
-  function toggleRepeatMode() {
-    if (repeatMode === 'off') {
-      repeatMode = 'all';
-      if (repeatBtn) repeatBtn.classList.add('spotify-active');
-      if (repeatIcon) repeatIcon.className = 'fa-solid fa-repeat';
-    } else if (repeatMode === 'all') {
-      repeatMode = 'one';
-      if (repeatBtn) repeatBtn.classList.add('spotify-active');
-      if (repeatIcon) repeatIcon.className = 'fa-solid fa-arrows-to-dot';
-    } else {
-      repeatMode = 'off';
-      if (repeatBtn) repeatBtn.classList.remove('spotify-active');
-      if (repeatIcon) repeatIcon.className = 'fa-solid fa-repeat';
-    }
-  }
-
-  function updateVolumeUI() {
-    if (!audio || !volumeSlider || !volumeIcon) return;
-    const vol = audio.volume;
-    volumeSlider.value = vol;
-
-    const percentage = vol * 100;
-    volumeSlider.style.background = `linear-gradient(to right, #1db954 ${percentage}%, #4d4d4d ${percentage}%)`;
-
-    if (vol === 0) {
-      volumeIcon.className = "fa-solid fa-volume-xmark spotify-icon-btn";
-    } else if (vol < 0.5) {
-      volumeIcon.className = "fa-solid fa-volume-low spotify-icon-btn";
-    } else {
-      volumeIcon.className = "fa-solid fa-volume-high spotify-icon-btn";
-    }
-  }
-
-  function toggleMute() {
-    if (!audio) return;
-    if (audio.volume > 0) {
-      previousVolume = audio.volume;
-      audio.volume = 0;
-    } else {
-      audio.volume = previousVolume || 1;
-    }
-    updateVolumeUI();
-  }
-
-  function updateProgress(e) {
-    const { duration, currentTime } = e.srcElement;
-    if (isNaN(duration) || duration === 0) return;
-
-    const progressPercent = (currentTime / duration) * 100;
-    if (progressBar) progressBar.style.width = `${progressPercent}%`;
-
-    if (currentTimeEl) currentTimeEl.textContent = formatTime(currentTime);
-    if (durationEl) durationEl.textContent = formatTime(duration);
-  }
-
-  function setProgress(e) {
-    if (tracks.length === 0 || !audio) return;
-    const width = this.clientWidth;
-    const clickX = e.offsetX;
-    const duration = audio.duration;
-    if (!isNaN(duration)) {
-      audio.currentTime = (clickX / width) * duration;
-    }
-  }
-
-  function renderPlaylist() {
-    if (!playlistEl) return;
+  function renderTable() {
     playlistEl.innerHTML = "";
+    
+    // Update Stats
+    document.getElementById("total-songs-count").textContent = `${tracks.length} songs`;
+    const uniqueArtists = new Set(tracks.map(t => t.artist)).size;
+    document.getElementById("total-artists-count").textContent = `${uniqueArtists} artists`;
 
-    if (totalTracksCount) totalTracksCount.textContent = `${tracks.length} tracks`;
-
-    tracks.forEach((track, index) => {
+    tracks.forEach((track, idx) => {
       const tr = document.createElement("tr");
-      tr.className = "spotify-track-row";
+      tr.className = "row-track";
       tr.innerHTML = `
-        <td class="col-num track-number">
-          <span class="num-text">${index + 1}</span>
-          <i class="fa-solid fa-play row-play-icon"></i>
-        </td>
-        <td class="col-title track-title-text">${track.title}</td>
-        <td class="col-artist track-artist-text">${track.artist}</td>
-        <td class="col-action">
-          <button class="like-btn" title="Save to Your Library">
-            <i class="fa-regular fa-heart"></i>
-          </button>
-        </td>
+        <td class="col-idx">${idx + 1}</td>
+        <td class="col-cover"><div class="row-thumb"><i class="fa-solid fa-music"></i></div></td>
+        <td class="col-title">${track.title}</td>
+        <td class="col-artist">${track.artist}</td>
+        <td class="col-time">--:--</td>
       `;
 
-      tr.addEventListener("click", (e) => {
-        if (e.target.closest(".like-btn")) {
-          const heart = e.target.closest(".like-btn").querySelector("i");
-          heart.classList.toggle("fa-regular");
-          heart.classList.toggle("fa-solid");
-          heart.classList.toggle("liked");
-          return;
-        }
-        loadTrack(index);
+      tr.addEventListener("click", () => {
+        loadTrack(idx);
         playTrack();
       });
 
@@ -277,60 +182,75 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function updatePlaylistHighlight() {
-    if (!playlistEl) return;
-    const rows = playlistEl.querySelectorAll(".spotify-track-row");
-    rows.forEach((row, index) => {
-      if (index === currentTrackIndex) {
-        row.classList.add("spotify-row-active");
+  function highlightRow() {
+    const rows = playlistEl.querySelectorAll(".row-track");
+    rows.forEach((row, i) => {
+      if (i === currentTrackIndex) {
+        row.classList.add("active-row");
         row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       } else {
-        row.classList.remove("spotify-row-active");
+        row.classList.remove("active-row");
       }
     });
   }
 
-  // Event Listeners
-  if (playBtn) playBtn.addEventListener("click", togglePlay);
-  if (heroPlayBtn) heroPlayBtn.addEventListener("click", togglePlay);
-  if (prevBtn) prevBtn.addEventListener("click", prevTrack);
-  if (nextBtn) nextBtn.addEventListener("click", nextTrack);
-
-  if (shuffleBtn) {
-    shuffleBtn.addEventListener("click", () => {
-      isShuffle = !isShuffle;
-      shuffleBtn.classList.toggle("spotify-active", isShuffle);
-    });
-  }
-
-  if (repeatBtn) repeatBtn.addEventListener("click", toggleRepeatMode);
-  if (volumeIcon) volumeIcon.addEventListener("click", toggleMute);
-
-  if (volumeSlider) {
-    volumeSlider.addEventListener("input", (e) => {
-      if (audio) audio.volume = parseFloat(e.target.value);
-      updateVolumeUI();
-    });
-  }
-
-  if (audio) {
-    audio.addEventListener("timeupdate", updateProgress);
-    audio.addEventListener("ended", handleTrackEnded);
-  }
-
-  if (progressContainer) progressContainer.addEventListener("click", setProgress);
-
-  document.addEventListener("keydown", (e) => {
-    if (e.code === "Space" && e.target.tagName !== "INPUT") {
-      e.preventDefault();
-      togglePlay();
+  // Audio Events
+  audio.addEventListener("timeupdate", () => {
+    if (!isNaN(audio.duration)) {
+      const pct = (audio.currentTime / audio.duration) * 100;
+      progressBar.style.width = `${pct}%`;
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+      durationEl.textContent = formatTime(audio.duration);
     }
   });
 
-  // Initialization
-  renderPlaylist();
-  if (tracks.length > 0) {
-    loadTrack(0);
+  audio.addEventListener("ended", () => {
+    if (isRepeat) {
+      playTrack();
+    } else {
+      nextTrack();
+    }
+  });
+
+  // UI Handlers
+  playBtn.addEventListener("click", togglePlay);
+  heroPlayBtn.addEventListener("click", togglePlay);
+  prevBtn.addEventListener("click", prevTrack);
+  nextBtn.addEventListener("click", nextTrack);
+
+  shuffleBtn.addEventListener("click", () => {
+    isShuffle = !isShuffle;
+    shuffleBtn.classList.toggle("active", isShuffle);
+  });
+
+  if (heroShuffleBtn) {
+    heroShuffleBtn.addEventListener("click", () => {
+      isShuffle = true;
+      shuffleBtn.classList.add("active");
+      nextTrack();
+    });
   }
-  updateVolumeUI();
+
+  repeatBtn.addEventListener("click", () => {
+    isRepeat = !isRepeat;
+    repeatBtn.classList.toggle("active", isRepeat);
+  });
+
+  progressContainer.addEventListener("click", (e) => {
+    const w = progressContainer.clientWidth;
+    const x = e.offsetX;
+    if (!isNaN(audio.duration)) {
+      audio.currentTime = (x / w) * audio.duration;
+    }
+  });
+
+  volumeSlider.addEventListener("input", (e) => {
+    const val = parseFloat(e.target.value);
+    audio.volume = val;
+    volumeVal.textContent = `${Math.round(val * 100)}%`;
+  });
+
+  // Init
+  renderTable();
+  loadTrack(0);
 });
