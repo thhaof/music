@@ -1,346 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>thhaof - Music Streaming Platform</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        nctDark: '#121919',
-                        nctSidebar: '#172020',
-                        nctCard: '#1f2b2a',
-                        nctAccent: '#00d0be',
-                        nctAccentHover: '#00b3a3',
-                        nctTextMuted: '#9aa8a7'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #121919;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #2a3837;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #00d0be;
-        }
-        .text-glow {
-            text-shadow: 0 0 10px rgba(0, 208, 190, 0.4);
-        }
-        input[type="range"] {
-            accent-color: #00d0be;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>thhaof - Web Player</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background-color: #121212; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #181818; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
+    .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
+    .active-nav { background-color: rgba(255, 255, 255, 0.1); border-left: 4px solid #3b82f6; color: #fff !important; }
+  </style>
 </head>
-<body class="bg-nctDark text-gray-100 font-sans h-screen flex flex-col overflow-hidden select-none">
+<body class="h-screen flex flex-col overflow-hidden select-none">
 
-    <!-- Toast Notification Overlay -->
-    <div id="toastNotification" class="fixed top-5 right-5 bg-nctCard border border-nctAccent/50 text-white px-4 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-3 transition-all duration-300 -translate-y-20 opacity-0 pointer-events-none">
-        <i id="toastIcon" class="fa-solid fa-circle-check text-nctAccent text-lg"></i>
-        <span id="toastMessage" class="text-xs font-semibold">Action completed!</span>
+  <!-- AUTH MODAL -->
+  <div id="authModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center">
+    <div class="bg-[#1e1e1e] p-8 rounded-2xl w-96 border border-gray-800 shadow-2xl relative">
+      <h2 class="text-2xl font-bold mb-2 text-center text-blue-500">thhaof</h2>
+      <p class="text-xs text-gray-400 text-center mb-6">Sign in to enjoy unlimited music streaming</p>
+      
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="mb-4">
+          <label class="block text-xs text-gray-400 mb-1">Username</label>
+          <input type="text" id="usernameInput" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="Enter 'admin'" required>
+        </div>
+        <div class="mb-6">
+          <label class="block text-xs text-gray-400 mb-1">Password</label>
+          <input type="password" id="passwordInput" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="Enter '123456'" required>
+        </div>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-lg text-sm transition">Login</button>
+        <p id="loginError" class="text-red-500 text-xs mt-3 text-center hidden">Invalid username or password!</p>
+      </form>
     </div>
+  </div>
 
-    <div class="flex flex-1 h-[calc(100vh-80px)] overflow-hidden">
-        
-        <!-- SIDEBAR -->
-        <aside class="w-64 bg-nctSidebar flex flex-col justify-between p-4 border-r border-gray-800/40 flex-shrink-0">
-            <div>
-                <!-- Brand Logo -->
-                <div onclick="switchTab('discover')" class="flex items-center gap-3 px-2 py-3 mb-6 cursor-pointer group">
-                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-nctAccent to-blue-500 flex items-center justify-center font-bold text-black text-xl shadow-lg shadow-nctAccent/20 group-hover:scale-105 transition">
-                        t
-                    </div>
-                    <span class="text-2xl font-black tracking-wider text-white">thhaof</span>
-                </div>
-
-                <!-- Navigation Links -->
-                <nav class="space-y-1">
-                    <button onclick="switchTab('discover')" id="nav-discover" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-nctAccent/10 text-nctAccent font-medium text-sm transition text-left">
-                        <i class="fa-solid fa-compass w-5 text-center"></i> Discover
-                    </button>
-                    <button onclick="switchTab('foryou')" id="nav-foryou" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-nctTextMuted hover:text-white hover:bg-gray-800/50 font-medium text-sm transition text-left">
-                        <i class="fa-solid fa-chart-line w-5 text-center"></i> For You
-                    </button>
-                    <button onclick="switchTab('mymusic')" id="nav-mymusic" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-nctTextMuted hover:text-white hover:bg-gray-800/50 font-medium text-sm transition text-left">
-                        <i class="fa-solid fa-user w-5 text-center"></i> My Music
-                    </button>
-                </nav>
-
-                <!-- Library Section -->
-                <div class="mt-8">
-                    <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Library</p>
-                    <nav class="space-y-1">
-                        <button id="nav-favorites" onclick="showFavorites()" class="nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-nctTextMuted hover:text-white hover:bg-gray-800/30 text-sm transition text-left">
-                            <i class="fa-solid fa-heart text-pink-500 w-5 text-center"></i> Favorite Songs
-                        </button>
-                        <button id="nav-recent" onclick="showRecentlyPlayed()" class="nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-nctTextMuted hover:text-white hover:bg-gray-800/30 text-sm transition text-left">
-                            <i class="fa-solid fa-clock-rotate-left text-blue-400 w-5 text-center"></i> Recently Played
-                        </button>
-                    </nav>
-                </div>
-
-                <!-- User Playlists -->
-                <div class="mt-8">
-                    <div class="flex items-center justify-between px-3 mb-2">
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Playlists</p>
-                        <button onclick="createNewPlaylistPrompt()" class="text-xs text-nctAccent hover:underline flex items-center gap-1"><i class="fa-solid fa-plus text-[10px]"></i> New</button>
-                    </div>
-                    <div id="playlistSidebarList" class="space-y-1 max-h-36 overflow-y-auto pr-1">
-                        <!-- Playlists rendered dynamically -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Login Promo Box in Sidebar -->
-            <div id="sidebarLoginBox" class="bg-gradient-to-br from-gray-800/60 to-nctCard p-4 rounded-2xl border border-gray-700/30">
-                <p class="text-xs text-gray-300 mb-3">Sign in to discover customized music and save your playlists.</p>
-                <button onclick="openLoginModal()" class="w-full py-2 bg-nctAccent hover:bg-nctAccentHover text-black font-semibold text-xs rounded-xl transition shadow-md shadow-nctAccent/10">
-                    Sign In
-                </button>
-            </div>
-        </aside>
-
-        <!-- MAIN CONTENT AREA -->
-        <main class="flex-1 flex flex-col overflow-y-auto bg-gradient-to-b from-nctDark via-[#121818] to-[#0c1010] p-6">
-            
-            <!-- Header Bar -->
-            <header class="flex items-center justify-between gap-4 mb-6">
-                <!-- Nav Arrows & Search Bar -->
-                <div class="flex items-center gap-4 flex-1 max-w-xl">
-                    <div class="flex items-center gap-2 text-gray-400">
-                        <button onclick="navigateHistory('back')" title="Go Back" class="w-8 h-8 rounded-full bg-nctCard flex items-center justify-center hover:text-white transition"><i class="fa-solid fa-chevron-left text-xs"></i></button>
-                        <button onclick="navigateHistory('forward')" title="Go Forward" class="w-8 h-8 rounded-full bg-nctCard flex items-center justify-center hover:text-white transition"><i class="fa-solid fa-chevron-right text-xs"></i></button>
-                    </div>
-                    <div class="relative w-full">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input id="searchInput" oninput="handleSearch()" type="text" placeholder="Search songs, artists, genres..." class="w-full bg-nctCard text-sm text-gray-200 pl-10 pr-8 py-2 rounded-full border border-gray-800 focus:outline-none focus:border-nctAccent/60 transition">
-                        <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs"><i class="fa-solid fa-circle-xmark"></i></button>
-                    </div>
-                </div>
-
-                <!-- Right Action Buttons -->
-                <div class="flex items-center gap-3">
-                    <button onclick="openUploadModal()" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-nctCard hover:bg-gray-800 text-xs font-medium text-gray-300 transition">
-                        <i class="fa-solid fa-upload text-nctAccent"></i> Upload
-                    </button>
-                    <button onclick="openVipModal()" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-nctCard hover:bg-gray-800 text-xs font-medium text-yellow-500 transition">
-                        <i class="fa-solid fa-crown"></i> VIP Center
-                    </button>
-                    <div id="userHeaderProfile">
-                        <button onclick="openLoginModal()" class="px-5 py-1.5 bg-nctAccent hover:bg-nctAccentHover text-black font-semibold text-xs rounded-full transition shadow-md shadow-nctAccent/20">
-                            Sign In
-                        </button>
-                    </div>
-                </div>
-            </header>
-
-            <div id="mainContent" class="space-y-8">
-                <!-- Dynamic main container content -->
-            </div>
-
-        </main>
+  <!-- CREATE PLAYLIST MODAL -->
+  <div id="createPlaylistModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden">
+    <div class="bg-[#1e1e1e] p-6 rounded-xl w-96 border border-gray-800 shadow-2xl">
+      <h3 class="text-lg font-bold mb-4">Create New Playlist</h3>
+      <input type="text" id="playlistNameInput" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 mb-4" placeholder="My Playlist #1">
+      <div class="flex justify-end gap-3">
+        <button onclick="closeModal('createPlaylistModal')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg">Cancel</button>
+        <button onclick="saveNewPlaylist()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-xs rounded-lg font-semibold">Create</button>
+      </div>
     </div>
+  </div>
 
-    <!-- BOTTOM FIXED MUSIC PLAYER BAR -->
-    <footer class="h-20 bg-[#151c1c] border-t border-gray-800/80 px-4 flex items-center justify-between z-30">
-        
-        <!-- Currently Playing Info -->
-        <div class="flex items-center gap-3 w-1/4 min-w-[200px]">
-            <img id="playerCover" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200" class="w-12 h-12 rounded-lg object-cover shadow-md">
-            <div class="overflow-hidden">
-                <h4 id="playerTitle" class="text-xs font-bold text-white truncate">Xin Đừng Rời Xa Anh</h4>
-                <p id="playerArtist" class="text-[11px] text-nctTextMuted truncate mt-0.5">Lê Gia Bảo</p>
-            </div>
-            <button id="likeBtn" onclick="toggleFavoriteCurrentSong()" class="ml-2 text-gray-400 hover:text-pink-500 transition">
-                <i class="fa-regular fa-heart text-base"></i>
-            </button>
-        </div>
+  <!-- ADD TO PLAYLIST MODAL -->
+  <div id="addToPlaylistModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden">
+    <div class="bg-[#1e1e1e] p-6 rounded-xl w-96 border border-gray-800 shadow-2xl">
+      <h3 class="text-lg font-bold mb-2">Add to Playlist</h3>
+      <p id="targetSongTitle" class="text-xs text-gray-400 mb-4 truncate"></p>
+      <div id="playlistSelectList" class="max-h-60 overflow-y-auto flex flex-col gap-2 mb-4">
+        <!-- Playlists list will be loaded here -->
+      </div>
+      <div class="flex justify-end gap-3">
+        <button onclick="closeModal('addToPlaylistModal')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg">Cancel</button>
+      </div>
+    </div>
+  </div>
 
-        <!-- Player Controls & Seekbar -->
-        <div class="flex flex-col items-center gap-1.5 w-2/4 max-w-xl">
-            <div class="flex items-center gap-5">
-                <button id="shuffleBtn" onclick="toggleShuffle()" title="Shuffle" class="text-gray-400 hover:text-white transition text-xs"><i class="fa-solid fa-shuffle"></i></button>
-                <button onclick="playPrev()" title="Previous" class="text-gray-300 hover:text-white transition"><i class="fa-solid fa-backward-step text-sm"></i></button>
-                <button id="mainPlayBtn" onclick="togglePlayPause()" title="Play/Pause" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition shadow-lg">
-                    <i class="fa-solid fa-play text-sm ml-0.5"></i>
-                </button>
-                <button onclick="playNext()" title="Next" class="text-gray-300 hover:text-white transition"><i class="fa-solid fa-forward-step text-sm"></i></button>
-                <button id="repeatBtn" onclick="toggleRepeat()" title="Repeat" class="text-gray-400 hover:text-white transition text-xs"><i class="fa-solid fa-repeat"></i></button>
-            </div>
-
-            <div class="w-full flex items-center gap-3 text-[11px] text-gray-400 font-mono">
-                <span id="currentTime">00:00</span>
-                <div class="relative flex-1 flex items-center">
-                    <input id="progressBar" type="range" min="0" max="100" value="0" oninput="seekAudio(this.value)" class="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                </div>
-                <span id="totalTime">00:00</span>
-            </div>
-        </div>
-
-        <!-- Right Side Controls (Quality, Volume, Playlist Drawer) -->
-        <div class="flex items-center justify-end gap-4 w-1/4 min-w-[200px]">
-            <button onclick="toggleBitrate()" id="bitrateBtn" class="text-[10px] font-bold border border-nctAccent/40 text-nctAccent px-1.5 py-0.5 rounded hover:bg-nctAccent/10 transition">128 kbps</button>
-            
-            <div class="flex items-center gap-2">
-                <button onclick="toggleMute()" id="volumeBtn" class="text-gray-400 hover:text-white"><i class="fa-solid fa-volume-high text-xs"></i></button>
-                <input id="volumeSlider" type="range" min="0" max="1" step="0.05" value="0.8" oninput="setVolume(this.value)" class="w-16 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-            </div>
-
-            <button onclick="togglePlaylistDrawer()" title="Play Queue" class="text-gray-400 hover:text-nctAccent transition"><i class="fa-solid fa-list-ul text-sm"></i></button>
-        </div>
-    </footer>
-
-    <!-- MODALS & OVERLAYS -->
+  <!-- MAIN WRAPPER -->
+  <div class="flex flex-1 overflow-hidden">
     
-    <!-- LOGIN MODAL -->
-    <div id="loginModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-nctCard border border-gray-700/60 w-full max-w-sm rounded-2xl p-6 relative shadow-2xl">
-            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            
-            <div class="text-center mb-6">
-                <div class="w-12 h-12 rounded-full bg-nctAccent/20 text-nctAccent flex items-center justify-center text-xl mx-auto mb-2">
-                    <i class="fa-solid fa-user-lock"></i>
-                </div>
-                <h3 class="text-lg font-bold text-white">Sign In to thhaof</h3>
-                <p class="text-xs text-gray-400 mt-1">Access your saved tracks, custom playlists & VIP perks</p>
-            </div>
-
-            <form onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 mb-1">Username</label>
-                    <input id="loginUsername" type="text" placeholder="admin" required class="w-full bg-nctDark border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-nctAccent">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 mb-1">Password</label>
-                    <input id="loginPassword" type="password" placeholder="••••••••" required class="w-full bg-nctDark border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-nctAccent">
-                </div>
-
-                <div id="loginError" class="text-red-400 text-xs hidden text-center">Invalid username or password!</div>
-
-                <button type="submit" class="w-full py-2.5 bg-nctAccent hover:bg-nctAccentHover text-black font-bold text-sm rounded-xl transition shadow-lg shadow-nctAccent/20">
-                    Log In
-                </button>
-            </form>
-
-            <div class="mt-4 text-center text-xs text-gray-500">
-                Demo Account: <span class="text-gray-300 font-mono">admin</span> / <span class="text-gray-300 font-mono">123456</span>
-            </div>
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-[#181818] flex flex-col justify-between border-r border-gray-800/50">
+      <div>
+        <!-- Logo -->
+        <div class="p-6 flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold text-lg">T</div>
+          <span class="font-bold text-xl tracking-wide bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">thhaof</span>
         </div>
+
+        <!-- Navigation Menu -->
+        <nav class="px-3 flex flex-col gap-1">
+          <a href="#" onclick="switchView('discover')" id="nav-discover" class="nav-item active-nav flex items-center gap-4 px-4 py-3 text-sm text-gray-300 hover:text-white rounded-lg transition">
+            <i class="fa-solid fa-compass text-lg"></i> Discover
+          </a>
+          <a href="#" onclick="switchView('for-you')" id="nav-for-you" class="nav-item flex items-center gap-4 px-4 py-3 text-sm text-gray-300 hover:text-white rounded-lg transition">
+            <i class="fa-solid fa-sparkles text-lg"></i> For You
+          </a>
+          <a href="#" onclick="switchView('my-music')" id="nav-my-music" class="nav-item flex items-center gap-4 px-4 py-3 text-sm text-gray-300 hover:text-white rounded-lg transition">
+            <i class="fa-solid fa-user-gear text-lg"></i> My Music
+          </a>
+        </nav>
+
+        <hr class="border-gray-800 my-4 mx-4">
+
+        <!-- Playlist Section -->
+        <div class="px-6 flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Playlists</span>
+          <button onclick="openModal('createPlaylistModal')" title="Create Playlist" class="text-gray-400 hover:text-white text-sm">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+
+        <div id="sidebarPlaylists" class="px-3 flex flex-col gap-1 max-h-48 overflow-y-auto">
+          <!-- Dynamic Playlists Added Here -->
+        </div>
+      </div>
+
+      <!-- User Profile -->
+      <div class="p-4 border-t border-gray-800/50 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-blue-600/30 text-blue-400 border border-blue-500/30 flex items-center justify-center text-sm font-bold" id="userAvatar">A</div>
+          <div>
+            <p class="text-xs font-semibold" id="userNameDisplay">Guest</p>
+            <p class="text-[10px] text-gray-400" id="userStatus">Free Account</p>
+          </div>
+        </div>
+        <button onclick="logout()" title="Logout" class="text-gray-400 hover:text-red-400 text-sm">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- CONTENT AREA -->
+    <main class="flex-1 bg-gradient-to-b from-[#1e1e1e] to-[#121212] overflow-y-auto p-8">
+      
+      <!-- HEADER BAR -->
+      <header class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-4 w-1/3 bg-[#2a2a2a] px-4 py-2 rounded-full border border-gray-700/50">
+          <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm"></i>
+          <input type="text" id="searchInput" onkeyup="filterSongs()" placeholder="Search songs, artists..." class="bg-transparent text-xs w-full text-white focus:outline-none">
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="openModal('createPlaylistModal')" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Create Playlist
+          </button>
+        </div>
+      </header>
+
+      <!-- DYNAMIC CONTENT VIEWS -->
+      <div id="contentView">
+        
+        <!-- DISCOVER VIEW -->
+        <div id="discoverView">
+          <h2 class="text-2xl font-bold mb-6">Discover Songs</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="songList">
+            <!-- All Songs Cards -->
+          </div>
+        </div>
+
+        <!-- PLAYLIST DETAIL VIEW (Hidden by default) -->
+        <div id="playlistDetailView" class="hidden">
+          <div class="flex items-end gap-6 mb-8">
+            <div class="w-40 h-40 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl">
+              <i class="fa-solid fa-music text-5xl text-white/70"></i>
+            </div>
+            <div>
+              <p class="text-xs uppercase font-semibold text-blue-400">Playlist</p>
+              <h1 id="playlistDetailTitle" class="text-4xl font-bold mt-1 mb-3">My Playlist</h1>
+              <p id="playlistDetailCount" class="text-xs text-gray-400 mb-4">0 Songs</p>
+              <button id="playAllBtn" class="bg-blue-600 hover:bg-blue-500 px-6 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2 shadow-lg">
+                <i class="fa-solid fa-play"></i> Play All
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-[#181818]/60 rounded-xl p-4">
+            <div id="playlistSongsList" class="flex flex-col gap-2">
+              <!-- Playlist Songs loaded here -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- PLAYER FOOTER BAR -->
+  <footer class="h-20 bg-[#181818] border-t border-gray-800/80 px-6 flex items-center justify-between z-40">
+    <!-- Song Info -->
+    <div class="flex items-center gap-4 w-1/4">
+      <img id="currentCover" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100&h=100&fit=crop" class="w-12 h-12 rounded-lg object-cover">
+      <div class="overflow-hidden">
+        <h4 id="currentTitle" class="text-sm font-semibold truncate">Select a song</h4>
+        <p id="currentArtist" class="text-xs text-gray-400 truncate">thhaof Player</p>
+      </div>
+      <button onclick="openAddToPlaylistCurrent()" title="Add to Playlist" class="text-gray-400 hover:text-white text-sm ml-2">
+        <i class="fa-regular fa-plus-square"></i>
+      </button>
     </div>
 
-    <!-- VIP MODAL -->
-    <div id="vipModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-nctCard border border-yellow-500/30 w-full max-w-md rounded-2xl p-6 relative shadow-2xl">
-            <button onclick="closeVipModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            
-            <div class="text-center mb-6">
-                <div class="w-14 h-14 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center text-2xl mx-auto mb-2 border border-yellow-500/40">
-                    <i class="fa-solid fa-crown"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white">VIP Membership Pass</h3>
-                <p class="text-xs text-gray-400 mt-1">Unlock Lossless 320kbps audio, offline mode, and ad-free listening.</p>
-            </div>
-
-            <div class="space-y-3 mb-6">
-                <div onclick="selectVipTier(this, '1 Month - $2.99')" class="vip-plan bg-gray-800/60 p-3 rounded-xl border-2 border-nctAccent cursor-pointer flex justify-between items-center">
-                    <div>
-                        <p class="text-xs font-bold text-white">1 Month VIP Pass</p>
-                        <p class="text-[10px] text-gray-400">Standard flexible monthly subscription</p>
-                    </div>
-                    <span class="text-sm font-extrabold text-nctAccent">$2.99</span>
-                </div>
-                <div onclick="selectVipTier(this, '1 Year - $24.99')" class="vip-plan bg-gray-800/60 p-3 rounded-xl border-2 border-transparent hover:border-gray-600 cursor-pointer flex justify-between items-center">
-                    <div>
-                        <p class="text-xs font-bold text-white">12 Months VIP Pass (Best Value)</p>
-                        <p class="text-[10px] text-gray-400">Save 30% on annual billing</p>
-                    </div>
-                    <span class="text-sm font-extrabold text-yellow-500">$24.99</span>
-                </div>
-            </div>
-
-            <button onclick="upgradeVip()" class="w-full py-2.5 bg-yellow-500 hover:bg-yellow-400 text-black font-bold text-sm rounded-xl transition shadow-lg shadow-yellow-500/20">
-                Upgrade Now
-            </button>
-        </div>
+    <!-- Controls -->
+    <div class="flex flex-col items-center gap-2 w-1/2 max-w-xl">
+      <div class="flex items-center gap-6">
+        <button id="shuffleBtn" onclick="toggleShuffle()" class="text-gray-400 hover:text-white text-xs"><i class="fa-solid fa-shuffle"></i></button>
+        <button onclick="prevSong()" class="text-gray-300 hover:text-white text-sm"><i class="fa-solid fa-backward-step"></i></button>
+        <button onclick="togglePlay()" class="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition">
+          <i id="playIcon" class="fa-solid fa-play text-sm ml-0.5"></i>
+        </button>
+        <button onclick="nextSong()" class="text-gray-300 hover:text-white text-sm"><i class="fa-solid fa-forward-step"></i></button>
+        <button id="repeatBtn" onclick="toggleRepeat()" class="text-gray-400 hover:text-white text-xs"><i class="fa-solid fa-repeat"></i></button>
+      </div>
+      
+      <!-- Progress Bar -->
+      <div class="flex items-center gap-3 w-full">
+        <span id="currentTime" class="text-[10px] text-gray-400 w-8 text-right">0:00</span>
+        <input type="range" id="progressBar" value="0" min="0" max="100" onchange="seekAudio()" class="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
+        <span id="durationTime" class="text-[10px] text-gray-400 w-8">0:00</span>
+      </div>
     </div>
 
-    <!-- UPLOAD MODAL -->
-    <div id="uploadModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-nctCard border border-gray-700/60 w-full max-w-md rounded-2xl p-6 relative shadow-2xl">
-            <button onclick="closeUploadModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            
-            <div class="text-center mb-6">
-                <div class="w-12 h-12 rounded-full bg-nctAccent/20 text-nctAccent flex items-center justify-center text-xl mx-auto mb-2">
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                </div>
-                <h3 class="text-lg font-bold text-white">Upload Your Audio Track</h3>
-                <p class="text-xs text-gray-400 mt-1">Publish your original songs or podcasts to thhaof</p>
-            </div>
-
-            <form onsubmit="handleUpload(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 mb-1">Track Title</label>
-                    <input id="uploadTitle" type="text" placeholder="e.g., Summer Night Acoustic" required class="w-full bg-nctDark border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-nctAccent">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 mb-1">Artist Name</label>
-                    <input id="uploadArtist" type="text" placeholder="e.g., Alex Rivers" required class="w-full bg-nctDark border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-nctAccent">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 mb-1">Genre</label>
-                    <select id="uploadGenre" class="w-full bg-nctDark border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-nctAccent">
-                        <option value="Pop">Pop</option>
-                        <option value="Pop Ballad">Pop Ballad</option>
-                        <option value="Chill">Chill Out</option>
-                        <option value="Remix">Remix</option>
-                        <option value="Lofi">Relax / Lofi</option>
-                        <option value="TikTok">TikTok</option>
-                    </select>
-                </div>
-                <button type="submit" class="w-full py-2.5 bg-nctAccent hover:bg-nctAccentHover text-black font-bold text-sm rounded-xl transition shadow-lg shadow-nctAccent/20">
-                    Publish Track
-                </button>
-            </form>
-        </div>
+    <!-- Volume -->
+    <div class="flex items-center gap-3 w-1/4 justify-end">
+      <i id="volumeIcon" class="fa-solid fa-volume-high text-gray-400 text-xs"></i>
+      <input type="range" id="volumeBar" value="80" min="0" max="100" oninput="setVolume()" class="w-20 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
     </div>
+  </footer>
 
-    <!-- PLAYLIST DRAWER SLIDE-OVER -->
-    <div id="playlistDrawer" class="fixed right-0 top-0 bottom-20 w-80 bg-nctSidebar border-l border-gray-800 shadow-2xl translate-x-full transition-transform duration-300 z-20 flex flex-col p-4">
-        <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-800">
-            <h3 class="font-bold text-sm text-white">Now Playing Queue</h3>
-            <button onclick="togglePlaylistDrawer()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div id="queueSongList" class="flex-1 overflow-y-auto space-y-2 pr-1">
-            <!-- Dynamic Queue list -->
-        </div>
-    </div>
+  <!-- AUDIO ELEMENT -->
+  <audio id="audioPlayer"></audio>
 
-    <!-- AUDIO PLAYER ELEMENT -->
-    <audio id="audioElement" preload="metadata"></audio>
-
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
-        const songs = [
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // SONGS DATABASE (Cloudflare URL examples)
+    const songs = [
             {
                 id: "1",
                 title: "Elegie",
@@ -362,619 +244,282 @@
                 cover: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/cover.jpg",
                 url: "https://pub-c53200e2456046529b88e014d8a71fcb.r2.dev/HVL%20by%20MCK/03.%20Wtf%20Bby%20I_m%20Lit.mp3",
             },
-        ];
+    ];
 
-        // App state tracking
-        let currentTab = 'discover';
-        let currentFilterGenre = null;
-        let currentSongIndex = 0;
-        let isPlaying = false;
-        let isShuffle = false;
-        let isRepeat = false;
-        let currentBitrate = '128 kbps';
-        let selectedVipPlan = '1 Month - $2.99';
-        
-        let favorites = JSON.parse(localStorage.getItem('thhaof_favorites')) || ["1", "3"];
-        let recentlyPlayed = JSON.parse(localStorage.getItem('thhaof_recent')) || ["1", "2"];
-        let userPlaylists = JSON.parse(localStorage.getItem('thhaof_playlists')) || ["My Top Hits", "Chill Vibez", "Workout Motivation"];
-        let currentUser = JSON.parse(localStorage.getItem('thhaof_user')) || null;
-        let historyStack = ['discover'];
-        let historyIndex = 0;
+    // PLAYLISTS STATE
+    let playlists = [
+      { id: 'p1', name: 'My Favorites', songIds: [1, 2] }
+    ];
 
-        const audio = document.getElementById('audioElement');
+    let currentQueue = [...songs];
+    let currentSongIndex = 0;
+    let isPlaying = false;
+    let selectedSongForPlaylist = null;
 
-        window.onload = () => {
-            renderTabContent('discover');
-            renderPlaylists();
-            loadSong(songs[currentSongIndex]);
-            updateUserUI();
-            setupAudioListeners();
-        };
+    const audio = document.getElementById('audioPlayer');
 
-        function showToast(msg, icon = "fa-circle-check") {
-            const toast = document.getElementById('toastNotification');
-            document.getElementById('toastMessage').textContent = msg;
-            document.getElementById('toastIcon').className = `fa-solid ${icon} text-nctAccent text-lg`;
-            
-            toast.classList.remove('-translate-y-20', 'opacity-0', 'pointer-events-none');
-            toast.classList.add('translate-y-0', 'opacity-100');
+    // INITIALIZATION
+    window.onload = () => {
+      renderSongs(songs);
+      renderSidebarPlaylists();
+      loadSong(0);
+    };
 
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('-translate-y-20', 'opacity-0', 'pointer-events-none');
-            }, 3000);
+    // AUTHENTICATION
+    function handleLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('usernameInput').value;
+      const p = document.getElementById('passwordInput').value;
+      
+      if(u === 'admin' && p === '123456') {
+        document.getElementById('authModal').classList.add('hidden');
+        document.getElementById('userNameDisplay').innerText = u;
+        document.getElementById('userStatus').innerText = 'VIP Member';
+      } else {
+        document.getElementById('loginError').classList.remove('hidden');
+      }
+    }
+
+    function logout() {
+      document.getElementById('authModal').classList.remove('hidden');
+    }
+
+    // MODAL CONTROL
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    // RENDER SONGS
+    function renderSongs(list) {
+      const container = document.getElementById('songList');
+      container.innerHTML = '';
+      list.forEach((song) => {
+        container.innerHTML += `
+          <div class="glass-card p-4 rounded-xl flex items-center justify-between hover:bg-white/10 transition group">
+            <div class="flex items-center gap-4 overflow-hidden">
+              <img src="${song.cover}" class="w-12 h-12 rounded-lg object-cover">
+              <div class="overflow-hidden">
+                <h4 class="text-sm font-semibold truncate text-white">${song.title}</h4>
+                <p class="text-xs text-gray-400 truncate">${song.artist}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="openAddToPlaylistModal(${song.id})" title="Add to Playlist" class="text-gray-400 hover:text-blue-400 px-2 py-1">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+              <button onclick="playSongById(${song.id})" class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                <i class="fa-solid fa-play text-xs text-white"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // PLAYLIST MANAGEMENT
+    function saveNewPlaylist() {
+      const name = document.getElementById('playlistNameInput').value.trim();
+      if (!name) return;
+      
+      const newPlaylist = {
+        id: 'p_' + Date.now(),
+        name: name,
+        songIds: []
+      };
+      
+      playlists.push(newPlaylist);
+      document.getElementById('playlistNameInput').value = '';
+      closeModal('createPlaylistModal');
+      renderSidebarPlaylists();
+    }
+
+    function renderSidebarPlaylists() {
+      const container = document.getElementById('sidebarPlaylists');
+      container.innerHTML = '';
+      playlists.forEach(pl => {
+        container.innerHTML += `
+          <button onclick="openPlaylistView('${pl.id}')" class="w-full text-left px-4 py-2 text-xs text-gray-400 hover:text-white rounded-lg hover:bg-white/5 truncate flex items-center justify-between group">
+            <span><i class="fa-solid fa-list-ul mr-2 text-blue-500"></i> ${pl.name}</span>
+            <span class="text-[10px] text-gray-500">${pl.songIds.length}</span>
+          </button>
+        `;
+      });
+    }
+
+    function openAddToPlaylistModal(songId) {
+      selectedSongForPlaylist = songs.find(s => s.id === songId);
+      document.getElementById('targetSongTitle').innerText = selectedSongForPlaylist.title;
+      
+      const listContainer = document.getElementById('playlistSelectList');
+      listContainer.innerHTML = '';
+      
+      playlists.forEach(pl => {
+        const isAdded = pl.songIds.includes(songId);
+        listContainer.innerHTML += `
+          <button onclick="toggleSongInPlaylist('${pl.id}', ${songId})" class="flex items-center justify-between p-3 rounded-lg bg-[#2a2a2a] hover:bg-[#333] text-xs transition">
+            <span>${pl.name}</span>
+            <i class="fa-solid ${isAdded ? 'fa-check text-green-400' : 'fa-plus text-gray-400'}"></i>
+          </button>
+        `;
+      });
+      openModal('addToPlaylistModal');
+    }
+
+    function openAddToPlaylistCurrent() {
+      if (currentQueue[currentSongIndex]) {
+        openAddToPlaylistModal(currentQueue[currentSongIndex].id);
+      }
+    }
+
+    function toggleSongInPlaylist(playlistId, songId) {
+      const pl = playlists.find(p => p.id === playlistId);
+      if (pl) {
+        if (pl.songIds.includes(songId)) {
+          pl.songIds = pl.songIds.filter(id => id !== songId);
+        } else {
+          pl.songIds.push(songId);
         }
+        openAddToPlaylistModal(songId);
+        renderSidebarPlaylists();
+      }
+    }
 
-        function setupAudioListeners() {
-            audio.addEventListener('timeupdate', updateProgress);
-            audio.addEventListener('ended', () => {
-                if (isRepeat) {
-                    audio.play();
-                } else {
-                    playNext();
-                }
-            });
-        }
+    // PLAYLIST VIEW & PLAYBACK
+    function openPlaylistView(playlistId) {
+      const pl = playlists.find(p => p.id === playlistId);
+      if (!pl) return;
 
-        // Navigation tab switching logic
-        function switchTab(tab, genreFilter = null) {
-            currentTab = tab;
-            currentFilterGenre = genreFilter;
+      document.getElementById('discoverView').classList.add('hidden');
+      document.getElementById('playlistDetailView').classList.remove('hidden');
 
-            // Update navigation highlights
-            document.querySelectorAll('.nav-item').forEach(el => {
-                el.classList.remove('bg-nctAccent/10', 'text-nctAccent');
-                el.classList.add('text-nctTextMuted');
-            });
+      document.getElementById('playlistDetailTitle').innerText = pl.name;
+      document.getElementById('playlistDetailCount').innerText = `${pl.songIds.length} Songs`;
 
-            const activeBtn = document.getElementById(`nav-${tab}`);
-            if (activeBtn) {
-                activeBtn.classList.add('bg-nctAccent/10', 'text-nctAccent');
-                activeBtn.classList.remove('text-nctTextMuted');
-            }
+      const plSongs = songs.filter(s => pl.songIds.includes(s.id));
+      const songsListContainer = document.getElementById('playlistSongsList');
+      songsListContainer.innerHTML = '';
 
-            renderTabContent(tab);
-
-            if (historyStack[historyIndex] !== tab) {
-                historyStack = historyStack.slice(0, historyIndex + 1);
-                historyStack.push(tab);
-                historyIndex = historyStack.length - 1;
-            }
-        }
-
-        function navigateHistory(direction) {
-            if (direction === 'back' && historyIndex > 0) {
-                historyIndex--;
-                switchTab(historyStack[historyIndex]);
-            } else if (direction === 'forward' && historyIndex < historyStack.length - 1) {
-                historyIndex++;
-                switchTab(historyStack[historyIndex]);
-            } else {
-                showToast("No history in direction", "fa-circle-info");
-            }
-        }
-
-        // Dynamic page generation
-        function renderTabContent(tab) {
-            const container = document.getElementById('mainContent');
-            const greeting = getGreeting();
-
-            if (tab === 'discover') {
-                const listToDisplay = currentFilterGenre ? songs.filter(s => s.genre === currentFilterGenre) : songs;
-                container.innerHTML = `
-                    <div>
-                        <h1 class="text-2xl font-bold tracking-tight text-white mb-4">${greeting}</h1>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div onclick="playSongById('1')" class="relative h-44 rounded-2xl overflow-hidden group cursor-pointer shadow-lg">
-                                <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent p-6 flex flex-col justify-end">
-                                    <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded w-max mb-1 uppercase">Featured</span>
-                                    <h2 class="text-xl font-bold text-white">V-POP HITS TODAY</h2>
-                                    <p class="text-xs text-gray-300">Top trending Vietnamese chart toppers right now</p>
-                                </div>
-                            </div>
-                            <div onclick="playSongById('3')" class="relative h-44 rounded-2xl overflow-hidden group cursor-pointer shadow-lg hidden md:block">
-                                <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent p-6 flex flex-col justify-end">
-                                    <span class="bg-nctAccent text-black text-[10px] font-bold px-2 py-0.5 rounded w-max mb-1 uppercase">Chill Beats</span>
-                                    <h2 class="text-xl font-bold text-white">SIDE STORIES</h2>
-                                    <p class="text-xs text-gray-300">Relax & unwind with deep acoustic vibrations</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- TOPICS GRID SECTION -->
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-lg font-bold text-white">${currentFilterGenre ? 'Genre: ' + currentFilterGenre : 'Browse Topics'}</h2>
-                            ${currentFilterGenre ? `<button onclick="switchTab('discover')" class="text-xs text-nctAccent hover:underline">Clear Filter</button>` : `<a href="#" onclick="showToast('Browsing all categories')" class="text-xs text-gray-400 hover:text-nctAccent">See All</a>`}
-                        </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                            ${renderTopicCards()}
-                        </div>
-                    </div>
-
-                    <!-- CHARTS / TOP SONGS SECTION -->
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-lg font-bold text-white">Charts & Popular Rankings</h2>
-                            <button onclick="playAllSongs()" class="text-xs text-nctAccent hover:underline flex items-center gap-1"><i class="fa-solid fa-play text-[10px]"></i> Play All</button>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            ${renderSongsGrid(listToDisplay)}
-                        </div>
-                    </div>
-                `;
-            } else if (tab === 'foryou') {
-                container.innerHTML = `
-                    <div>
-                        <h1 class="text-2xl font-bold text-white mb-2">Made For You</h1>
-                        <p class="text-xs text-gray-400 mb-6">Personalized track recommendations based on your recent listening habits</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            ${renderSongsGrid(songs.slice().reverse())}
-                        </div>
-                    </div>
-                `;
-            } else if (tab === 'mymusic') {
-                if (!currentUser) {
-                    container.innerHTML = `
-                        <div class="text-center py-20 bg-nctCard/40 rounded-3xl border border-gray-800/60 p-8">
-                            <i class="fa-solid fa-user-shield text-5xl text-nctAccent mb-4"></i>
-                            <h2 class="text-xl font-bold text-white mb-2">Your Personal Music Library</h2>
-                            <p class="text-xs text-gray-400 max-w-sm mx-auto mb-6">Log in to view saved tracks, personalized playlists, and recently played history.</p>
-                            <button onclick="openLoginModal()" class="px-6 py-2.5 bg-nctAccent hover:bg-nctAccentHover text-black font-bold text-xs rounded-full transition shadow-lg shadow-nctAccent/20">
-                                Sign In Now
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    const favList = songs.filter(s => favorites.includes(s.id));
-                    container.innerHTML = `
-                        <div>
-                            <div class="flex items-center gap-4 mb-6 bg-nctCard/60 p-6 rounded-2xl border border-gray-800">
-                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200" class="w-16 h-16 rounded-full border-2 border-nctAccent object-cover">
-                                <div>
-                                    <h1 class="text-xl font-bold text-white">${currentUser.name}</h1>
-                                    <p class="text-xs text-gray-400">Premium Member • ${favorites.length} Favorite Songs</p>
-                                </div>
-                            </div>
-                            <h2 class="text-lg font-bold text-white mb-4">Your Favorites Collection</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                ${favList.length ? renderSongsGrid(favList) : '<p class="text-xs text-gray-500 italic">No favorite songs added yet.</p>'}
-                            </div>
-                        </div>
-                    `;
-                }
-            } else if (tab === 'favorites') {
-                const favList = songs.filter(s => favorites.includes(s.id));
-                container.innerHTML = `
-                    <div>
-                        <h1 class="text-2xl font-bold text-white mb-2"><i class="fa-solid fa-heart text-pink-500 mr-2"></i> Favorite Songs</h1>
-                        <p class="text-xs text-gray-400 mb-6">All the tracks you've saved to your library</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            ${favList.length ? renderSongsGrid(favList) : '<p class="text-xs text-gray-500 italic">Your favorites list is currently empty.</p>'}
-                        </div>
-                    </div>
-                `;
-            } else if (tab === 'recent') {
-                const recentList = songs.filter(s => recentlyPlayed.includes(s.id));
-                container.innerHTML = `
-                    <div>
-                        <h1 class="text-2xl font-bold text-white mb-2"><i class="fa-solid fa-clock-rotate-left text-blue-400 mr-2"></i> Recently Played</h1>
-                        <p class="text-xs text-gray-400 mb-6">Tracks played during your recent sessions</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            ${recentList.length ? renderSongsGrid(recentList) : '<p class="text-xs text-gray-500 italic">No listening history found.</p>'}
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        function getGreeting() {
-            const hour = new Date().getHours();
-            if (hour < 12) return "Good morning";
-            if (hour < 18) return "Good afternoon";
-            return "Good evening";
-        }
-
-        // Topic/Genre Card Rendering
-        function renderTopicCards() {
-            const genres = [
-                { name: 'Pop Ballad', icon: 'fa-music', bg: 'from-rose-500/20 to-orange-500/20', color: 'text-rose-400' },
-                { name: 'TikTok', icon: 'fa-tiktok', bg: 'from-cyan-500/20 to-blue-500/20', color: 'text-cyan-400', isBrand: true },
-                { name: 'Chill', icon: 'fa-mug-hot', bg: 'from-emerald-500/20 to-teal-500/20', color: 'text-emerald-400' },
-                { name: 'Pop', icon: 'fa-bolt', bg: 'from-purple-500/20 to-indigo-500/20', color: 'text-purple-400' },
-                { name: 'Remix', icon: 'fa-sliders', bg: 'from-yellow-500/20 to-amber-500/20', color: 'text-yellow-400' },
-                { name: 'Lofi', icon: 'fa-moon', bg: 'from-pink-500/20 to-purple-500/20', color: 'text-pink-400' }
-            ];
-
-            return genres.map(g => `
-                <div onclick="filterByGenre('${g.name}')" class="bg-gradient-to-br ${g.bg} p-4 rounded-xl border border-white/5 hover:border-nctAccent/50 cursor-pointer transition flex flex-col justify-between h-24 group shadow-md">
-                    <span class="font-bold text-sm text-white">${g.name}</span>
-                    <i class="${g.isBrand ? 'fa-brands' : 'fa-solid'} ${g.icon} ${g.color} self-end text-xl group-hover:scale-110 transition"></i>
+      if (plSongs.length === 0) {
+        songsListContainer.innerHTML = `<p class="text-xs text-gray-500 py-4 text-center">No songs in this playlist yet.</p>`;
+      } else {
+        plSongs.forEach((song, index) => {
+          songsListContainer.innerHTML += `
+            <div class="flex items-center justify-between p-3 hover:bg-white/10 rounded-lg transition group">
+              <div class="flex items-center gap-4">
+                <span class="text-xs text-gray-500 w-4">${index + 1}</span>
+                <img src="${song.cover}" class="w-10 h-10 rounded-md object-cover">
+                <div>
+                  <h5 class="text-xs font-semibold text-white">${song.title}</h5>
+                  <p class="text-[10px] text-gray-400">${song.artist}</p>
                 </div>
-            `).join('');
-        }
+              </div>
+              <button onclick="playPlaylistSong('${playlistId}', ${song.id})" class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                <i class="fa-solid fa-play text-[10px] text-white"></i>
+              </button>
+            </div>
+          `;
+        });
+      }
 
-        function renderSongsGrid(list) {
-            return list.map((song, index) => {
-                const isFav = favorites.includes(song.id);
-                return `
-                    <div class="bg-nctCard/70 hover:bg-nctCard p-3 rounded-2xl flex items-center justify-between border border-gray-800/40 hover:border-nctAccent/30 transition group shadow-md">
-                        <div class="flex items-center gap-3 overflow-hidden">
-                            <span class="text-xs font-bold text-gray-500 w-4 text-center">${index + 1}</span>
-                            <div class="relative w-12 h-12 rounded-xl overflow-hidden flex-shrink-0">
-                                <img src="${song.cover}" class="w-full h-full object-cover">
-                                <button onclick="playSongById('${song.id}')" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-nctAccent">
-                                    <i class="fa-solid fa-play"></i>
-                                </button>
-                            </div>
-                            <div class="overflow-hidden pr-2">
-                                <h4 onclick="playSongById('${song.id}')" class="text-xs font-bold text-white truncate cursor-pointer hover:text-nctAccent">${song.title}</h4>
-                                <p class="text-[11px] text-nctTextMuted truncate">${song.artist}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="toggleFavorite('${song.id}')" class="text-xs ${isFav ? 'text-pink-500' : 'text-gray-500 hover:text-pink-500'} transition p-1">
-                                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-                            </button>
-                            <button onclick="playSongById('${song.id}')" class="px-2.5 py-1 bg-nctAccent/10 hover:bg-nctAccent text-nctAccent hover:text-black font-semibold text-[11px] rounded-lg transition">
-                                Play
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
+      document.getElementById('playAllBtn').onclick = () => playPlaylist(playlistId);
+    }
 
-        // Audio controls logic
-        function loadSong(song) {
-            audio.src = song.url;
-            document.getElementById('playerTitle').textContent = song.title;
-            document.getElementById('playerArtist').textContent = song.artist;
-            document.getElementById('playerCover').src = song.cover;
-            
-            updateFavoriteHeartUI();
-            renderQueue();
+    function playPlaylist(playlistId) {
+      const pl = playlists.find(p => p.id === playlistId);
+      if (!pl || pl.songIds.length === 0) return;
 
-            if (!recentlyPlayed.includes(song.id)) {
-                recentlyPlayed.unshift(song.id);
-                localStorage.setItem('thhaof_recent', JSON.stringify(recentlyPlayed));
-            }
-        }
+      currentQueue = songs.filter(s => pl.songIds.includes(s.id));
+      currentSongIndex = 0;
+      loadSong(0);
+      playAudio();
+    }
 
-        function togglePlayPause() {
-            if (isPlaying) {
-                audio.pause();
-                isPlaying = false;
-                document.getElementById('mainPlayBtn').innerHTML = '<i class="fa-solid fa-play text-sm ml-0.5"></i>';
-            } else {
-                audio.play();
-                isPlaying = true;
-                document.getElementById('mainPlayBtn').innerHTML = '<i class="fa-solid fa-pause text-sm"></i>';
-            }
-        }
+    function playPlaylistSong(playlistId, songId) {
+      const pl = playlists.find(p => p.id === playlistId);
+      currentQueue = songs.filter(s => pl.songIds.includes(s.id));
+      currentSongIndex = currentQueue.findIndex(s => s.id === songId);
+      loadSong(currentSongIndex);
+      playAudio();
+    }
 
-        function playSongById(id) {
-            const index = songs.findIndex(s => s.id === id);
-            if (index !== -1) {
-                currentSongIndex = index;
-                loadSong(songs[currentSongIndex]);
-                audio.play();
-                isPlaying = true;
-                document.getElementById('mainPlayBtn').innerHTML = '<i class="fa-solid fa-pause text-sm"></i>';
-                showToast(`Now Playing: ${songs[currentSongIndex].title}`, "fa-music");
-            }
-        }
+    // PLAYER CORE LOGIC
+    function loadSong(index) {
+      if (!currentQueue[index]) return;
+      const song = currentQueue[index];
+      audio.src = song.src;
+      document.getElementById('currentCover').src = song.cover;
+      document.getElementById('currentTitle').innerText = song.title;
+      document.getElementById('currentArtist').innerText = song.artist;
+    }
 
-        function playAllSongs() {
-            currentSongIndex = 0;
-            loadSong(songs[0]);
-            audio.play();
-            isPlaying = true;
-            document.getElementById('mainPlayBtn').innerHTML = '<i class="fa-solid fa-pause text-sm"></i>';
-            showToast("Playing all top tracks", "fa-play");
-        }
+    function playSongById(id) {
+      currentQueue = [...songs];
+      currentSongIndex = currentQueue.findIndex(s => s.id === id);
+      loadSong(currentSongIndex);
+      playAudio();
+    }
 
-        function playNext() {
-            if (isShuffle) {
-                currentSongIndex = Math.floor(Math.random() * songs.length);
-            } else {
-                currentSongIndex = (currentSongIndex + 1) % songs.length;
-            }
-            loadSong(songs[currentSongIndex]);
-            audio.play();
-            isPlaying = true;
-            document.getElementById('mainPlayBtn').innerHTML = '<i class="fa-solid fa-pause text-sm"></i>';
-        }
+    function togglePlay() {
+      if (isPlaying) pauseAudio();
+      else playAudio();
+    }
 
-        function playPrev() {
-            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-            loadSong(songs[currentSongIndex]);
-            audio.play();
-            isPlaying = true;
-            document.getElementById('mainPlayBtn').innerHTML = '<i class="fa-solid fa-pause text-sm"></i>';
-        }
+    function playAudio() {
+      audio.play();
+      isPlaying = true;
+      document.getElementById('playIcon').className = "fa-solid fa-pause text-sm";
+    }
 
-        function updateProgress() {
-            if (audio.duration) {
-                const percent = (audio.currentTime / audio.duration) * 100;
-                document.getElementById('progressBar').value = percent;
-                document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
-                document.getElementById('totalTime').textContent = formatTime(audio.duration);
-            }
-        }
+    function pauseAudio() {
+      audio.pause();
+      isPlaying = false;
+      document.getElementById('playIcon').className = "fa-solid fa-play text-sm ml-0.5";
+    }
 
-        function seekAudio(value) {
-            if (audio.duration) {
-                audio.currentTime = (value / 100) * audio.duration;
-            }
-        }
+    function prevSong() {
+      currentSongIndex = (currentSongIndex - 1 + currentQueue.length) % currentQueue.length;
+      loadSong(currentSongIndex);
+      playAudio();
+    }
 
-        function setVolume(val) {
-            audio.volume = val;
-        }
+    function nextSong() {
+      currentSongIndex = (currentSongIndex + 1) % currentQueue.length;
+      loadSong(currentSongIndex);
+      playAudio();
+    }
 
-        function toggleMute() {
-            audio.muted = !audio.muted;
-            document.getElementById('volumeBtn').innerHTML = audio.muted ? 
-                '<i class="fa-solid fa-volume-xmark text-xs text-red-400"></i>' : 
-                '<i class="fa-solid fa-volume-high text-xs"></i>';
-        }
+    // AUDIO TIME & VOLUME UPDATES
+    audio.ontimeupdate = () => {
+      if (audio.duration) {
+        const progress = (audio.currentTime / audio.duration) * 100;
+        document.getElementById('progressBar').value = progress;
+        document.getElementById('currentTime').innerText = formatTime(audio.currentTime);
+        document.getElementById('durationTime').innerText = formatTime(audio.duration);
+      }
+    };
 
-        function toggleBitrate() {
-            currentBitrate = currentBitrate === '128 kbps' ? '320 kbps (VIP)' : '128 kbps';
-            document.getElementById('bitrateBtn').textContent = currentBitrate;
-            showToast(`Audio quality switched to ${currentBitrate}`, "fa-sliders");
-        }
+    audio.onended = () => nextSong();
 
-        function toggleShuffle() {
-            isShuffle = !isShuffle;
-            document.getElementById('shuffleBtn').classList.toggle('text-nctAccent', isShuffle);
-            showToast(isShuffle ? "Shuffle Mode Enabled" : "Shuffle Mode Disabled", "fa-shuffle");
-        }
+    function seekAudio() {
+      const seekTime = (document.getElementById('progressBar').value / 100) * audio.duration;
+      audio.currentTime = seekTime;
+    }
 
-        function toggleRepeat() {
-            isRepeat = !isRepeat;
-            document.getElementById('repeatBtn').classList.toggle('text-nctAccent', isRepeat);
-            showToast(isRepeat ? "Repeat Track Enabled" : "Repeat Track Disabled", "fa-repeat");
-        }
+    function setVolume() {
+      audio.volume = document.getElementById('volumeBar').value / 100;
+    }
 
-        function formatTime(seconds) {
-            const min = Math.floor(seconds / 60);
-            const sec = Math.floor(seconds % 60);
-            return `${min < 10 ? '0' : ''}${min}:${sec < 10 ? '0' : ''}${sec}`;
-        }
+    function formatTime(seconds) {
+      const min = Math.floor(seconds / 60);
+      const sec = Math.floor(seconds % 60);
+      return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+    }
 
-        // Favorites and Playlists management
-        function toggleFavorite(id) {
-            if (favorites.includes(id)) {
-                favorites = favorites.filter(fId => fId !== id);
-                showToast("Removed from Favorites", "fa-heart-crack");
-            } else {
-                favorites.push(id);
-                showToast("Added to Favorites!", "fa-heart");
-            }
-            localStorage.setItem('thhaof_favorites', JSON.stringify(favorites));
-            renderTabContent(currentTab);
-            updateFavoriteHeartUI();
-        }
-
-        function toggleFavoriteCurrentSong() {
-            const currentSong = songs[currentSongIndex];
-            toggleFavorite(currentSong.id);
-        }
-
-        function updateFavoriteHeartUI() {
-            const currentSong = songs[currentSongIndex];
-            const isFav = favorites.includes(currentSong.id);
-            const likeBtn = document.getElementById('likeBtn');
-            likeBtn.innerHTML = `<i class="${isFav ? 'fa-solid text-pink-500' : 'fa-regular'} fa-heart text-base"></i>`;
-        }
-
-        function renderPlaylists() {
-            const container = document.getElementById('playlistSidebarList');
-            container.innerHTML = userPlaylists.map(pl => `
-                <div onclick="openPlaylistTracks('${pl}')" class="px-3 py-1.5 rounded-lg text-nctTextMuted hover:text-white hover:bg-gray-800/30 text-xs flex items-center gap-2 cursor-pointer transition">
-                    <i class="fa-solid fa-list-music text-nctAccent/70"></i>
-                    <span class="truncate">${pl}</span>
-                </div>
-            `).join('');
-        }
-
-        function createNewPlaylistPrompt() {
-            const name = prompt("Enter new playlist name:");
-            if (name && name.trim()) {
-                userPlaylists.push(name.trim());
-                localStorage.setItem('thhaof_playlists', JSON.stringify(userPlaylists));
-                renderPlaylists();
-                showToast(`Created playlist "${name}"!`, "fa-folder-plus");
-            }
-        }
-
-        function openPlaylistTracks(plName) {
-            showToast(`Opened playlist: ${plName}`, "fa-folder-open");
-            switchTab('discover');
-        }
-
-        // Search Handlers
-        function handleSearch() {
-            const input = document.getElementById('searchInput');
-            const clearBtn = document.getElementById('clearSearchBtn');
-            const query = input.value.toLowerCase().trim();
-
-            if (query.length > 0) {
-                clearBtn.classList.remove('hidden');
-            } else {
-                clearBtn.classList.add('hidden');
-            }
-
-            if (currentTab !== 'discover') {
-                switchTab('discover');
-            } else {
-                const filtered = songs.filter(s => s.title.toLowerCase().includes(query) || s.artist.toLowerCase().includes(query) || s.genre.toLowerCase().includes(query));
-                renderTabContent('discover');
-                const grid = document.querySelector('#mainContent .grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3');
-                if (grid) {
-                    grid.innerHTML = filtered.length ? renderSongsGrid(filtered) : '<p class="text-xs text-gray-500 col-span-3 py-4">No matching songs found.</p>';
-                }
-            }
-        }
-
-        function clearSearch() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('clearSearchBtn').classList.add('hidden');
-            renderTabContent('discover');
-        }
-
-        function filterByGenre(genre) {
-            switchTab('discover', genre);
-        }
-
-        function showFavorites() {
-            switchTab('favorites');
-        }
-
-        function showRecentlyPlayed() {
-            switchTab('recent');
-        }
-
-        // Modal Handlers
-        function openLoginModal() {
-            document.getElementById('loginModal').classList.remove('hidden');
-            document.getElementById('loginModal').classList.add('flex');
-        }
-
-        function closeLoginModal() {
-            document.getElementById('loginModal').classList.add('hidden');
-            document.getElementById('loginModal').classList.remove('flex');
-            document.getElementById('loginError').classList.add('hidden');
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const userVal = document.getElementById('loginUsername').value;
-            const passVal = document.getElementById('loginPassword').value;
-
-            if (userVal === "admin" && passVal === "123456") {
-                currentUser = { username: "admin", name: "Administrator" };
-                localStorage.setItem('thhaof_user', JSON.stringify(currentUser));
-                updateUserUI();
-                closeLoginModal();
-                showToast("Successfully logged in!", "fa-user-check");
-                renderTabContent(currentTab);
-            } else {
-                document.getElementById('loginError').classList.remove('hidden');
-            }
-        }
-
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('thhaof_user');
-            updateUserUI();
-            showToast("Logged out of account", "fa-right-from-bracket");
-            renderTabContent(currentTab);
-        }
-
-        function updateUserUI() {
-            const profileContainer = document.getElementById('userHeaderProfile');
-            const sidebarLoginBox = document.getElementById('sidebarLoginBox');
-
-            if (currentUser) {
-                profileContainer.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" class="w-8 h-8 rounded-full border border-nctAccent object-cover">
-                        <span class="text-xs font-semibold text-white">${currentUser.username}</span>
-                        <button onclick="logout()" title="Logout" class="text-xs text-gray-400 hover:text-red-400 ml-1"><i class="fa-solid fa-right-from-bracket"></i></button>
-                    </div>
-                `;
-                sidebarLoginBox.style.display = 'none';
-            } else {
-                profileContainer.innerHTML = `
-                    <button onclick="openLoginModal()" class="px-5 py-1.5 bg-nctAccent hover:bg-nctAccentHover text-black font-semibold text-xs rounded-full transition shadow-md shadow-nctAccent/20">
-                        Sign In
-                    </button>
-                `;
-                sidebarLoginBox.style.display = 'block';
-            }
-        }
-
-        function openVipModal() {
-            document.getElementById('vipModal').classList.remove('hidden');
-            document.getElementById('vipModal').classList.add('flex');
-        }
-
-        function closeVipModal() {
-            document.getElementById('vipModal').classList.add('hidden');
-            document.getElementById('vipModal').classList.remove('flex');
-        }
-
-        function selectVipTier(el, plan) {
-            document.querySelectorAll('.vip-plan').forEach(planEl => {
-                planEl.classList.remove('border-nctAccent');
-                planEl.classList.add('border-transparent');
-            });
-            el.classList.remove('border-transparent');
-            el.classList.add('border-nctAccent');
-            selectedVipPlan = plan;
-        }
-
-        function upgradeVip() {
-            closeVipModal();
-            showToast(`Upgraded to VIP Pass (${selectedVipPlan})!`, "fa-crown");
-        }
-
-        function openUploadModal() {
-            document.getElementById('uploadModal').classList.remove('hidden');
-            document.getElementById('uploadModal').classList.add('flex');
-        }
-
-        function closeUploadModal() {
-            document.getElementById('uploadModal').classList.add('hidden');
-            document.getElementById('uploadModal').classList.remove('flex');
-        }
-
-        function handleUpload(e) {
-            e.preventDefault();
-            const title = document.getElementById('uploadTitle').value;
-            const artist = document.getElementById('uploadArtist').value;
-            const genre = document.getElementById('uploadGenre').value;
-
-            const newSong = {
-                id: (songs.length + 1).toString(),
-                title: title,
-                artist: artist,
-                genre: genre,
-                cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=200",
-                url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
-                plays: "1",
-                duration: "04:10"
-            };
-
-            songs.unshift(newSong);
-            closeUploadModal();
-            showToast("Uploaded track successfully!", "fa-circle-check");
-            renderTabContent('discover');
-        }
-
-        function togglePlaylistDrawer() {
-            document.getElementById('playlistDrawer').classList.toggle('translate-x-full');
-        }
-
-        function renderQueue() {
-            const queueList = document.getElementById('queueSongList');
-            queueList.innerHTML = songs.map((s, idx) => `
-                <div onclick="playSongById('${s.id}')" class="p-2 rounded-lg flex items-center gap-3 cursor-pointer ${idx === currentSongIndex ? 'bg-nctAccent/20 text-nctAccent' : 'hover:bg-gray-800 text-gray-300'}">
-                    <img src="${s.cover}" class="w-8 h-8 rounded object-cover">
-                    <div class="overflow-hidden">
-                        <p class="text-xs font-bold truncate">${s.title}</p>
-                        <p class="text-[10px] text-gray-400 truncate">${s.artist}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-    </script>
+    function switchView(view) {
+      if (view === 'discover') {
+        document.getElementById('playlistDetailView').classList.add('hidden');
+        document.getElementById('discoverView').classList.remove('hidden');
+      }
+    }
+  </script>
 </body>
 </html>
